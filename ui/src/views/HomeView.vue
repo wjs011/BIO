@@ -59,7 +59,7 @@
         <div class="cards-grid">
           <router-link to="/project-overview" class="card">
             <div class="card-image">
-              <img src="@/assets/Picture/项目概览/c14c8985-845c-4f71-ab76-bb94e99a720b.jpeg" alt="项目概览">
+              <img src="@/assets/Picture/核心技术/7094d48f-df6f-4b19-aedf-72b46c76d4ad.jpeg" alt="核心技术">
             </div>
             <div class="card-content">
               <h3>项目概览</h3>
@@ -69,7 +69,7 @@
 
           <router-link to="/technique" class="card">
             <div class="card-image">
-              <img src="@/assets/Picture/核心技术/7094d48f-df6f-4b19-aedf-72b46c76d4ad.jpeg" alt="核心技术">
+              <img src="@/assets/Picture/项目概览/c14c8985-845c-4f71-ab76-bb94e99a720b.jpeg" alt="项目概览">
             </div>
             <div class="card-content">
               <h3>核心技术</h3>

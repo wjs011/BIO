@@ -93,7 +93,7 @@
         <div class="scenarios">
           <div class="scenario-item">
             <div class="scenario-image">
-              <img src="@/assets/Picture/增强型全球生物多样性AI守护者/photocefefipwnSxZNOOQMPpHTXBGkly.webp" alt="热带雨林保护">
+              <img src="@/assets/Picture/增强型全球生物多样性AI守护者/生成热带雨林保护图片.png" alt="热带雨林保护">
             </div>
             <div class="scenario-content">
               <h3>热带雨林保护</h3>
@@ -115,13 +115,13 @@
               </div>
             </div>
             <div class="scenario-image">
-              <img src="@/assets/Picture/增强型全球生物多样性AI守护者/photodabbcdQLeIAxkEuZQdfZVsKRsLo.webp" alt="海洋生态保护">
+              <img src="@/assets/Picture/增强型全球生物多样性AI守护者/海洋保护图片.png" alt="海洋生态保护">
             </div>
           </div>
           
           <div class="scenario-item">
             <div class="scenario-image">
-              <img src="@/assets/Picture/增强型全球生物多样性AI守护者/photodadcfTolKDnAeAlXnThigMIjfVF.webp" alt="草原生态系统">
+              <img src="@/assets/Picture/增强型全球生物多样性AI守护者/草原生态保护图片.png" alt="草原生态系统">
             </div>
             <div class="scenario-content">
               <h3>草原生态系统</h3>
@@ -129,6 +129,34 @@
               <div class="scenario-stats">
                 <div class="scenario-stat">200万公顷 监测覆盖</div>
                 <div class="scenario-stat">3倍 恢复效率提升</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="scenario-item reverse">
+            <div class="scenario-content">
+              <h3>北极生态监测</h3>
+              <p>在北极地区，我们的AI系统通过卫星数据和现场传感器网络，监测冰盖变化、北极动物迁徙模式以及生态系统变化。系统能够实时跟踪北极熊、海豹等标志性物种的种群数量和健康状况，同时监测气候变化对生态系统的影响。</p>
+              <div class="scenario-stats">
+                <div class="scenario-stat">95% 监测精度</div>
+                <div class="scenario-stat">28% 保护区增长</div>
+              </div>
+            </div>
+            <div class="scenario-image">
+              <img src="@/assets/Picture/增强型全球生物多样性AI守护者/北极生态图片.png" alt="北极生态监测">
+            </div>
+          </div>
+
+          <div class="scenario-item">
+            <div class="scenario-image">
+              <img src="@/assets/Picture/增强型全球生物多样性AI守护者/高山生态保护图片.png" alt="高山生态系统">
+            </div>
+            <div class="scenario-content">
+              <h3>高山生态系统</h3>
+              <p>我们的高山监测系统在喜马拉雅山脉、阿尔卑斯山和安第斯山脉等高海拔地区运行，追踪冰川变化、高山植被分布和濒危高山物种。通过机器学习模型分析环境变化趋势，为高山生态系统的保护和管理提供科学依据。</p>
+              <div class="scenario-stats">
+                <div class="scenario-stat">12+ 高山保护区</div>
+                <div class="scenario-stat">45% 预警提升率</div>
               </div>
             </div>
           </div>
