@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <header>
+    <header :class="['main-header', { 'nav-hidden': !isNavVisible }]">
       <nav>
         <div class="nav-container">
           <div class="logo">生物多样性AI守护者</div>
@@ -25,26 +25,45 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      dropdownVisible: false,
-      dropdownTimer: null
-    }
-  },
-  methods: {
-    showDropdown() {
-      clearTimeout(this.dropdownTimer)
-      this.dropdownVisible = true
-    },
-    hideDropdown() {
-      this.dropdownTimer = setTimeout(() => {
-        this.dropdownVisible = false
-      }, 200)
-    }
-  }
+<script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+
+const lastScrollY = ref(0)
+const isNavVisible = ref(true)
+
+const dropdownVisible = ref(false)
+let dropdownTimer = null
+
+const showDropdown = () => {
+  clearTimeout(dropdownTimer)
+  dropdownVisible.value = true
 }
+const hideDropdown = () => {
+  dropdownTimer = setTimeout(() => {
+    dropdownVisible.value = false
+  }, 200)
+}
+
+const handleScroll = () => {
+  const currentScrollY = window.scrollY
+  if (currentScrollY <= 0) {
+    isNavVisible.value = true
+    return
+  }
+  if (currentScrollY > lastScrollY.value) {
+    isNavVisible.value = false
+  } else {
+    isNavVisible.value = true
+  }
+  lastScrollY.value = currentScrollY
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>
 
 <style>
@@ -64,7 +83,8 @@ body {
   background-color: #f5f5f5;
 }
 
-header {
+/* 新增：主导航栏动画样式 */
+.main-header {
   position: fixed;
   top: 20px;
   left: 150px;
@@ -73,6 +93,10 @@ header {
   background-color: #000000;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s cubic-bezier(.4,2,.6,1);
+}
+.main-header.nav-hidden {
+  transform: translateY(-120%);
 }
 
 nav {

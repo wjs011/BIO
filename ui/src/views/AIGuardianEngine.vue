@@ -173,13 +173,30 @@ function goBack() {
 .ai-root-light {
   width: 100vw;
   min-height: 100vh;
-  background: #F8F9FA;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-family: 'Inter', 'Noto Sans SC', Arial, sans-serif;
   position: relative;
+  overflow: hidden;
+}
+/* 背景图片低透明度覆盖 */
+.ai-root-light::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; right: 0; bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url('/public/background.jpg') center center/cover no-repeat;
+  opacity: 0.9;
+  z-index: 0;
+  pointer-events: none;
+}
+/* 保证内容在背景图之上 */
+.ai-root-light > * {
+  position: relative;
+  z-index: 1;
 }
 .select-upload-wrap {
   width: 100vw;
@@ -188,7 +205,7 @@ function goBack() {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #F8F9FA;
+  background: transparent;
 }
 .subtitle {
   font-size: 1.08rem;
@@ -352,7 +369,7 @@ function goBack() {
   align-items: center;
   justify-content: flex-start;
   padding-top: 80px;
-  background: #F8F9FA;
+  background: transparent;
 }
 .info-card-light {
   width: 90%;
