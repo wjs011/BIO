@@ -80,9 +80,9 @@
 <script setup>
 import { ref, computed } from 'vue'
 const samples = ref([
-  { name: '东北虎', desc: '日间高清', image: 'https://placehold.co/160x160/1a1a1a/ffffff?text=Tiger', cover: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80', id: 'CN-TGR-003', species: '东北虎', age: '5岁', health: '健康' },
-  { name: '雪豹', desc: '夜间红外图像', image: 'https://placehold.co/160x160/2a2a2a/ffffff?text=Leopard', cover: 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=400&q=80', id: 'CN-PNU-014', species: '雪豹', age: '3岁', health: '亚健康' },
-  { name: '大熊猫', desc: '部分被遮挡', image: 'https://placehold.co/160x160/3a3a3a/ffffff?text=Panda', cover: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80', id: 'CN-AML-088', species: '大熊猫', age: '8岁', health: '需关注' }
+  { name: '东北虎', desc: '日间高清', image: 'https://placehold.co/160x160/1a1a1a/ffffff?text=Tiger', cover: new URL('@/assets/Picture/AI识别/东北虎.jpg', import.meta.url).href, id: 'CN-TGR-003', species: '东北虎', age: '5岁', health: '健康' },
+  { name: '雪豹', desc: '夜间红外图像', image: 'https://placehold.co/160x160/2a2a2a/ffffff?text=Leopard', cover: new URL('@/assets/Picture/AI识别/雪豹.jpg', import.meta.url).href, id: 'CN-PNU-014', species: '雪豹', age: '3岁', health: '亚健康' },
+  { name: '大熊猫', desc: '部分被遮挡', image: 'https://placehold.co/160x160/3a3a3a/ffffff?text=Panda', cover: new URL('@/assets/Picture/AI识别/大熊猫.jpg', import.meta.url).href, id: 'CN-AML-088', species: '大熊猫', age: '8岁', health: '需关注' }
 ])
 const currentStep = ref('select') // 'select' | 'analyzing' | 'result'
 const selectedAnimalIndex = ref(null)
@@ -94,8 +94,13 @@ const currentStatusIndex = ref(0)
 let scanTimer = null
 let statusTimer = null
 
-// 设定的识别结果（无论上传什么都一样）
-const resultAnimal = samples.value[0]
+const resultAnimal = computed(() => {
+  if (selectedAnimalIndex.value !== null) {
+    return samples.value[selectedAnimalIndex.value]
+  }
+  // 上传图片时默认返回东北虎
+  return samples.value[0]
+})
 
 const canStart = computed(() => selectedAnimalIndex.value !== null || uploadedImage.value)
 const displayImage = computed(() => {
