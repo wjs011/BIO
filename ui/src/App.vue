@@ -6,9 +6,13 @@
           <div class="logo">生物多样性AI守护者</div>
           <div class="nav-links">
             <router-link to="/">首页</router-link>
-            <router-link to="/project-overview">项目概览</router-link>
-            <router-link to="/technique">核心技术</router-link>
-            <router-link to="/ai-guardian">增强型全球生物多样性AI守护者</router-link>
+            <div class="dropdown" @mouseenter="showDropdown" @mouseleave="hideDropdown">
+              <span class="dropdown-title">项目介绍</span>
+              <div class="dropdown-content" v-show="dropdownVisible" @mouseenter="showDropdown" @mouseleave="hideDropdown">
+                <router-link to="/project-overview">项目概览</router-link>
+                <router-link to="/technique">核心技术</router-link>
+              </div>
+            </div>
           </div>
         </div>
       </nav>
@@ -18,6 +22,28 @@
     </main>
   </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      dropdownVisible: false,
+      dropdownTimer: null
+    }
+  },
+  methods: {
+    showDropdown() {
+      clearTimeout(this.dropdownTimer)
+      this.dropdownVisible = true
+    },
+    hideDropdown() {
+      this.dropdownTimer = setTimeout(() => {
+        this.dropdownVisible = false
+      }, 200)
+    }
+  }
+}
+</script>
 
 <style>
 #app {
@@ -67,43 +93,64 @@ nav {
 .nav-links {
   display: flex;
   gap: 30px;
+  align-items: center;
 }
 
-nav a {
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-title {
   font-weight: 500;
   color: #2c3e50;
-  text-decoration: none;
+  cursor: pointer;
+  padding: 0 8px;
   transition: color 0.3s ease;
-  position: relative;
 }
 
-nav a::after {
-  content: '';
+.dropdown-title:hover {
+  color: #42b983;
+}
+
+.dropdown-content {
   position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background-color: #42b983;
-  transition: width 0.3s ease;
+  background-color: #fff;
+  min-width: 120px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 1001;
+  flex-direction: column;
+  border-radius: 4px;
+  margin-top: 8px;
 }
 
-nav a:hover {
+.dropdown-content .router-link-active,
+.dropdown-content a:hover {
   color: #42b983;
 }
 
-nav a:hover::after,
-nav a.router-link-active::after {
-  width: 100%;
+.dropdown:hover .dropdown-content {
+  display: flex;
 }
 
-nav a.router-link-active {
-  color: #42b983;
+.dropdown-content a {
+  color: #2c3e50;
+  padding: 10px 16px;
+  text-decoration: none;
+  display: block;
+  transition: background 0.2s;
+  border-radius: 4px;
 }
 
-main {
-  padding-top: 80px; /* Add space for fixed header */
-  min-height: calc(100vh - 80px);
+.dropdown-content a:hover {
+  background: #f0f9f5;
+}
+
+.dropdown-content[style*="display: block"],
+.dropdown-content[style*="display: flex"],
+.dropdown-content[style*="display: inline-block"],
+.dropdown-content[style*="display: inline-flex"] {
+  display: flex !important;
 }
 
 /* Global styles */
@@ -113,5 +160,16 @@ h1, h2, h3, h4, h5 {
 
 img {
   max-width: 100%;
+}
+
+nav a,
+nav a:visited {
+  color: #2c3e50;
+  text-decoration: none;
+}
+
+nav a.router-link-active {
+  color: #42b983;
+  text-decoration: none;
 }
 </style>

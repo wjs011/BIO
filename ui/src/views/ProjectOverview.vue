@@ -1,130 +1,198 @@
 <template>
-  <div class="project-overview">
+  <div class="ai-guardian">
     <div class="page-banner">
-      <h1>项目概览</h1>
+      <h1>增强型全球生物多样性AI守护者</h1>
     </div>
 
     <div class="container">
-      <section class="overview-section">
+      <section class="hero-section">
+        <div class="hero-image-container">
+          <img src="@/assets/Picture/增强型全球生物多样性AI守护者/photo-1458724338480-79bc7a8352e4.webp" alt="AI守护者" class="hero-image">
+          <div class="hero-overlay">
+            <h2>智能守护生物多样性</h2>
+            <p>利用人工智能技术保护全球生态系统</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="guardian-section">
         <div class="section-header">
-          <h2>项目介绍</h2>
+          <h2>系统概述</h2>
           <div class="section-line"></div>
         </div>
-        
-        <div class="overview-content">
-          <div class="content-text">
-            <p>增强型全球生物多样性AI守护者是一个大型综合性平台，致力于利用前沿人工智能技术保护全球生物多样性。本项目结合了深度学习、计算机视觉、大数据分析和物联网技术，构建了一个覆盖全球的生态监测与保护系统。</p>
-            <p>通过部署在各类生态系统中的智能监测设备，结合卫星遥感数据，我们的AI系统能够实时监测、分析和预测生物多样性变化趋势，为濒危物种保护和生态系统健康评估提供科学依据。</p>
-            <div class="stats-highlight">
+        <div class="section-content">
+          <div class="text-content">
+            <p>增强型全球生物多样性AI守护者是一个综合性平台，通过先进的人工智能技术监测、分析和保护全球生物多样性。该系统结合了机器学习、计算机视觉和大数据分析技术，为生态系统保护提供了全面的解决方案。</p>
+            <p>我们的系统不仅能够识别和追踪濒危物种，还能分析生态系统健康状况，预测潜在威胁，并为保护行动提供科学依据。通过全球部署的监测网络，我们实现了对关键生态系统的实时监控和保护。</p>
+            <div class="stats-row">
               <div class="stat-item">
-                <div class="stat-number">5年</div>
-                <div class="stat-text">研发历程</div>
+                <div class="stat-number">5000+</div>
+                <div class="stat-text">物种监测</div>
               </div>
               <div class="stat-item">
-                <div class="stat-number">100+</div>
-                <div class="stat-text">国家覆盖</div>
+                <div class="stat-number">85%</div>
+                <div class="stat-text">预警准确率</div>
               </div>
               <div class="stat-item">
-                <div class="stat-number">500+</div>
-                <div class="stat-text">合作机构</div>
+                <div class="stat-number">24/7</div>
+                <div class="stat-text">实时监控</div>
               </div>
             </div>
           </div>
-          <div class="content-image">
-            <img src="@/assets/Picture/项目概览/9a8fe4be-ce73-4418-91e5-a14efc07ab5a.jpeg" alt="项目概述">
+          <div class="image-gallery">
+            <img src="@/assets/Picture/增强型全球生物多样性AI守护者/620e10d2-917a-4f47-b757-7bf18518d4af.jpeg" alt="系统概述">
           </div>
         </div>
       </section>
-
-      <section class="overview-section">
+      
+      <section class="guardian-section">
         <div class="section-header">
-          <h2>项目目标</h2>
+          <h2>关键功能</h2>
           <div class="section-line"></div>
         </div>
-        
-        <div class="goals-grid">
-          <div class="goal-card">
-            <div class="goal-icon">🌍</div>
-            <h3>建立全球监测网络</h3>
-            <p>在全球范围内部署智能监测系统，构建生物多样性数据库，实现对生态系统的实时监控。</p>
+        <div class="features-grid">
+          <div class="feature-card">
+            <img src="@/assets/Picture/增强型全球生物多样性AI守护者/305d17c2-3eb1-4593-8d27-1e85bb2c6ca2.jpeg" alt="物种识别">
+            <div class="feature-content">
+              <h3>物种识别与追踪</h3>
+              <p>利用深度学习算法自动识别和分类动植物物种，实现对濒危物种的精准监测和保护。</p>
+            </div>
           </div>
           
-          <div class="goal-card">
-            <div class="goal-icon">🔬</div>
-            <h3>物种保护与研究</h3>
-            <p>重点关注濒危物种及其栖息地，开展深入研究，制定科学保护方案，阻止生物多样性丧失。</p>
+          <div class="feature-card">
+            <img src="@/assets/Picture/增强型全球生物多样性AI守护者/4369a2bd-e4be-46a4-bb8b-29c9413a23f4.jpeg" alt="环境监测">
+            <div class="feature-content">
+              <h3>生态环境监测</h3>
+              <p>实时监控环境参数变化，评估生态系统健康状况，及时发现环境风险。</p>
+            </div>
           </div>
           
-          <div class="goal-card">
-            <div class="goal-icon">🤝</div>
-            <h3>促进全球合作</h3>
-            <p>连接全球科研机构、保护组织和政府部门，共享数据和资源，协同推进生物多样性保护。</p>
+          <div class="feature-card">
+            <img src="@/assets/Picture/增强型全球生物多样性AI守护者/f7a9043e-7f2c-4a2f-8e87-785bf1944db4.jpeg" alt="数据分析">
+            <div class="feature-content">
+              <h3>数据分析与预测</h3>
+              <p>基于海量生态数据进行多维分析，预测生物多样性变化趋势，为保护决策提供支持。</p>
+            </div>
           </div>
           
-          <div class="goal-card">
-            <div class="goal-icon">📊</div>
-            <h3>数据驱动决策</h3>
-            <p>基于海量生态数据和AI分析，为生态保护决策提供科学依据，提高保护行动的有效性。</p>
+          <div class="feature-card">
+            <img src="@/assets/Picture/增强型全球生物多样性AI守护者/e42925a9-a2c9-4c35-a4b8-d7b79c6d22e1.jpeg" alt="协作平台">
+            <div class="feature-content">
+              <h3>全球协作平台</h3>
+              <p>连接世界各地的科研机构、保护组织和志愿者，实现知识共享和协同保护。</p>
+            </div>
           </div>
         </div>
       </section>
-
-      <section class="overview-section">
+      
+      <section class="guardian-section">
         <div class="section-header">
           <h2>应用场景</h2>
           <div class="section-line"></div>
         </div>
-        
-        <div class="applications-content">
-          <div class="application-item">
-            <div class="application-image">
-              <img src="@/assets/Picture/项目概览/f89e8c3f-c8ef-4e3c-9d05-500fde5f8f62.jpeg" alt="热带雨林保护">
+        <div class="scenarios">
+          <div class="scenario-item">
+            <div class="scenario-image">
+              <img src="@/assets/Picture/增强型全球生物多样性AI守护者/生成热带雨林保护图片.png" alt="热带雨林保护">
             </div>
-            <div class="application-details">
+            <div class="scenario-content">
               <h3>热带雨林保护</h3>
-              <p>在亚马逊、刚果盆地等世界重要雨林区域部署AI监测系统，实时识别非法砍伐活动，监测物种分布变化，评估森林健康状况。我们的系统已成功帮助当地保护区减少40%的非法活动。</p>
+              <p>在亚马逊雨林部署的AI监测系统，能够自动识别非法砍伐活动，追踪濒危物种分布，评估森林健康状况。通过与当地保护区合作，我们已成功减少了32%的非法入侵活动，并发现了5个此前未记录的物种种群。</p>
+              <div class="scenario-stats">
+                <div class="scenario-stat">32% 减少非法活动</div>
+                <div class="scenario-stat">5 新物种种群发现</div>
+              </div>
             </div>
           </div>
           
-          <div class="application-item reverse">
-            <div class="application-image">
-              <img src="@/assets/Picture/项目概览/cbddebbecZkvUMRgtkDrzkSdwkpKDQFF.jpeg" alt="珊瑚礁监测">
+          <div class="scenario-item reverse">
+            <div class="scenario-content">
+              <h3>海洋生态保护</h3>
+              <p>通过水下传感器网络和AI图像分析，我们持续监测珊瑚礁健康状况，识别海洋污染，追踪海洋生物迁徙模式。在大堡礁区域，我们的早期预警系统成功预测了多次珊瑚白化风险，使保护机构能够提前采取干预措施。</p>
+              <div class="scenario-stats">
+                <div class="scenario-stat">30天 提前预警</div>
+                <div class="scenario-stat">40% 减少珊瑚损失</div>
+              </div>
             </div>
-            <div class="application-details">
-              <h3>珊瑚礁监测</h3>
-              <p>通过水下智能传感器和自主潜水机器人，持续监测全球珊瑚礁健康状况，识别白化现象，预警海洋酸化风险。我们的早期预警系统帮助大堡礁保护区提前30天预测到了潜在的白化风险。</p>
+            <div class="scenario-image">
+              <img src="@/assets/Picture/增强型全球生物多样性AI守护者/海洋保护图片.png" alt="海洋生态保护">
             </div>
           </div>
           
-          <div class="application-item">
-            <div class="application-image">
-              <img src="@/assets/Picture/项目概览/fcbbecaadedabaFzjZNzqRjFlZrtlZwa.jpeg" alt="濒危物种保护">
+          <div class="scenario-item">
+            <div class="scenario-image">
+              <img src="@/assets/Picture/增强型全球生物多样性AI守护者/草原生态保护图片.png" alt="草原生态系统">
             </div>
-            <div class="application-details">
-              <h3>濒危物种保护</h3>
-              <p>针对全球濒危物种，部署专项监测与保护计划，实时追踪个体活动，分析种群动态，预测威胁因素。在非洲象保护项目中，我们的AI系统帮助巡护队提高了60%的反偷猎效率。</p>
+            <div class="scenario-content">
+              <h3>草原生态系统</h3>
+              <p>结合卫星遥感和地面传感器网络，我们对全球主要草原生态系统进行监测，评估草原退化情况，分析生物多样性变化，指导生态恢复工作。在非洲大草原项目中，我们的系统帮助确定了最佳恢复区域，显著提高了恢复效率。</p>
+              <div class="scenario-stats">
+                <div class="scenario-stat">200万公顷 监测覆盖</div>
+                <div class="scenario-stat">3倍 恢复效率提升</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="scenario-item reverse">
+            <div class="scenario-content">
+              <h3>北极生态监测</h3>
+              <p>在北极地区，我们的AI系统通过卫星数据和现场传感器网络，监测冰盖变化、北极动物迁徙模式以及生态系统变化。系统能够实时跟踪北极熊、海豹等标志性物种的种群数量和健康状况，同时监测气候变化对生态系统的影响。</p>
+              <div class="scenario-stats">
+                <div class="scenario-stat">95% 监测精度</div>
+                <div class="scenario-stat">28% 保护区增长</div>
+              </div>
+            </div>
+            <div class="scenario-image">
+              <img src="@/assets/Picture/增强型全球生物多样性AI守护者/北极生态图片.png" alt="北极生态监测">
+            </div>
+          </div>
+
+          <div class="scenario-item">
+            <div class="scenario-image">
+              <img src="@/assets/Picture/增强型全球生物多样性AI守护者/高山生态保护图片.png" alt="高山生态系统">
+            </div>
+            <div class="scenario-content">
+              <h3>高山生态系统</h3>
+              <p>我们的高山监测系统在喜马拉雅山脉、阿尔卑斯山和安第斯山脉等高海拔地区运行，追踪冰川变化、高山植被分布和濒危高山物种。通过机器学习模型分析环境变化趋势，为高山生态系统的保护和管理提供科学依据。</p>
+              <div class="scenario-stats">
+                <div class="scenario-stat">12+ 高山保护区</div>
+                <div class="scenario-stat">45% 预警提升率</div>
+              </div>
             </div>
           </div>
         </div>
       </section>
-
-      <section class="overview-section">
+      
+      <section class="guardian-section impact-section">
         <div class="section-header">
-          <h2>合作伙伴</h2>
+          <h2>全球影响</h2>
           <div class="section-line"></div>
         </div>
-        
-        <div class="partners-grid">
-          <div class="partner-logo">WWF</div>
-          <div class="partner-logo">UNESCO</div>
-          <div class="partner-logo">Conservation International</div>
-          <div class="partner-logo">UNEP</div>
-          <div class="partner-logo">National Geographic</div>
-          <div class="partner-logo">IUCN</div>
+        <div class="impact-stats">
+          <div class="stat-item">
+            <div class="stat-number">100+</div>
+            <div class="stat-label">国家和地区覆盖</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">10,000+</div>
+            <div class="stat-label">监测点部署</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">500+</div>
+            <div class="stat-label">保护项目支持</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">200+</div>
+            <div class="stat-label">濒危物种保护</div>
+          </div>
+        </div>
+        <div class="impact-map">
+          <img src="@/assets/Picture/增强型全球生物多样性AI守护者/photofcbtSiptsAtbLXOakQilnzwwVMy.webp" alt="全球影响">
         </div>
         
-        <div class="action-button">
-          <router-link to="/ai-guardian" class="btn-primary">探索AI守护者 &rarr;</router-link>
+        <div class="action-buttons">
+          <router-link to="/project-overview" class="btn btn-outline">了解项目背景</router-link>
+          <router-link to="/technique" class="btn btn-primary">探索核心技术</router-link>
         </div>
       </section>
     </div>
@@ -140,13 +208,13 @@ export default {
 </script>
 
 <style scoped>
-.project-overview {
+.ai-guardian {
   width: 100%;
 }
 
 .page-banner {
   background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), 
-              url('@/assets/Picture/项目概览/c14c8985-845c-4f71-ab76-bb94e99a720b.jpeg') no-repeat center center;
+              url('@/assets/Picture/增强型全球生物多样性AI守护者/QfrvcWxxuRiVtgfbTVMHxEGhbygJPaiT.webp') no-repeat center center;
   background-size: cover;
   height: 250px;
   display: flex;
@@ -164,10 +232,6 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
   padding: 50px 20px;
-}
-
-.overview-section {
-  margin-bottom: 70px;
 }
 
 .section-header {
@@ -188,33 +252,81 @@ export default {
   margin: 0 auto;
 }
 
-.overview-content {
+/* 英雄区域 */
+.hero-section {
+  margin-bottom: 60px;
+}
+
+.hero-image-container {
+  position: relative;
+  height: 500px;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  color: white;
+  padding: 60px 40px 40px;
+  text-align: center;
+}
+
+.hero-overlay h2 {
+  font-size: 2.8rem;
+  margin-bottom: 15px;
+  color: white;
+}
+
+.hero-overlay p {
+  font-size: 1.4rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* 守护者部分 */
+.guardian-section {
+  margin-bottom: 70px;
+  padding: 0;
+}
+
+.section-content {
   display: flex;
-  align-items: center;
   gap: 40px;
+  align-items: center;
 }
 
-.content-text {
+.text-content {
   flex: 1;
 }
 
-.content-text p {
-  margin-bottom: 1.2rem;
+.text-content p {
+  margin-bottom: 20px;
   line-height: 1.7;
-  color: #333;
+  color: #444;
 }
 
-.content-image {
+.image-gallery {
   flex: 1;
 }
 
-.content-image img {
+.image-gallery img {
   width: 100%;
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-.stats-highlight {
+.stats-row {
   display: flex;
   justify-content: space-between;
   margin-top: 30px;
@@ -225,144 +337,224 @@ export default {
 }
 
 .stat-number {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   font-weight: bold;
   color: #42b983;
+  margin-bottom: 5px;
 }
 
 .stat-text {
   color: #666;
 }
 
-.goals-grid {
+/* 特性部分 */
+.features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
   gap: 30px;
 }
 
-.goal-card {
-  background-color: #f8f9fa;
-  padding: 30px;
+.feature-card {
+  background-color: white;
   border-radius: 10px;
+  overflow: hidden;
   box-shadow: 0 5px 15px rgba(0,0,0,0.05);
   transition: transform 0.3s ease;
 }
 
-.goal-card:hover {
+.feature-card:hover {
   transform: translateY(-5px);
 }
 
-.goal-icon {
-  font-size: 2.5rem;
-  margin-bottom: 15px;
+.feature-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
 }
 
-.goal-card h3 {
+.feature-content {
+  padding: 20px;
+}
+
+.feature-content h3 {
   margin-bottom: 15px;
   color: #2c3e50;
 }
 
-.goal-card p {
+.feature-content p {
   color: #555;
   line-height: 1.6;
 }
 
-.applications-content {
+/* 场景部分 */
+.scenarios {
   display: flex;
   flex-direction: column;
   gap: 50px;
 }
 
-.application-item {
+.scenario-item {
   display: flex;
-  gap: 30px;
+  gap: 40px;
 }
 
-.application-item.reverse {
+.scenario-item.reverse {
   flex-direction: row-reverse;
 }
 
-.application-image {
+.scenario-image {
   flex: 1;
 }
 
-.application-image img {
+.scenario-image img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-.application-details {
+.scenario-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.application-details h3 {
+.scenario-content h3 {
   font-size: 1.8rem;
   margin-bottom: 15px;
   color: #2c3e50;
 }
 
-.application-details p {
+.scenario-content p {
   line-height: 1.7;
   color: #444;
+  margin-bottom: 20px;
 }
 
-.partners-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+.scenario-stats {
+  display: flex;
   gap: 20px;
+}
+
+.scenario-stat {
+  background-color: #f8f9fa;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-weight: 600;
+  color: #42b983;
+}
+
+/* 影响部分 */
+.impact-section {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.impact-stats {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 40px;
 }
 
-.partner-logo {
-  background-color: #f8f9fa;
-  height: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  color: #2c3e50;
-  border-radius: 5px;
+.impact-stats .stat-item {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  min-width: 150px;
 }
 
-.action-button {
-  text-align: center;
-  margin-top: 40px;
+.impact-stats .stat-number {
+  font-size: 2.5rem;
+}
+
+.impact-map {
+  margin-bottom: 40px;
+}
+
+.impact-map img {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* 按钮部分 */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.btn {
+  padding: 12px 28px;
+  border-radius: 5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
 }
 
 .btn-primary {
   background-color: #42b983;
   color: white;
-  text-decoration: none;
-  padding: 12px 30px;
-  border-radius: 5px;
-  font-weight: 600;
-  transition: background-color 0.3s ease;
 }
 
 .btn-primary:hover {
   background-color: #3aa876;
 }
 
+.btn-outline {
+  background-color: transparent;
+  color: #42b983;
+  border: 2px solid #42b983;
+}
+
+.btn-outline:hover {
+  background-color: rgba(66, 185, 131, 0.1);
+}
+
+/* 响应式设计 */
 @media (max-width: 768px) {
-  .overview-content {
+  .section-content {
     flex-direction: column;
   }
   
-  .application-item, .application-item.reverse {
+  .scenario-item,
+  .scenario-item.reverse {
     flex-direction: column;
   }
   
-  .stats-highlight {
+  .hero-overlay h2 {
+    font-size: 2rem;
+  }
+  
+  .impact-stats {
     flex-wrap: wrap;
     gap: 20px;
   }
   
-  .stat-item {
-    width: 30%;
+  .impact-stats .stat-item {
+    width: 45%;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .impact-stats .stat-item {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  
+  .scenario-stats {
+    flex-direction: column;
+    gap: 10px;
   }
 }
 </style> 

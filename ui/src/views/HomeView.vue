@@ -7,7 +7,7 @@
         <p>利用人工智能技术保护地球生物多样性</p>
         <div class="hero-buttons">
           <router-link to="/project-overview" class="btn btn-primary">了解更多</router-link>
-          <router-link to="/ai-guardian" class="btn btn-secondary">探索技术</router-link>
+          <router-link to="/technique" class="btn btn-secondary">探索技术</router-link>
         </div>
       </div>
     </section>
@@ -77,7 +77,7 @@
             </div>
           </router-link>
 
-          <router-link to="/ai-guardian" class="card">
+          <router-link to="/technique" class="card">
             <div class="card-image">
               <img src="@/assets/Picture/增强型全球生物多样性AI守护者/photo-1458724338480-79bc7a8352e4.webp" alt="AI守护者">
             </div>

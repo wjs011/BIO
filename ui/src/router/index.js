@@ -24,11 +24,6 @@ const routes = [
     path: '/project-overview',
     name: 'project-overview',
     component: () => import(/* webpackChunkName: "project-overview" */ '../views/ProjectOverview.vue')
-  },
-  {
-    path: '/ai-guardian',
-    name: 'ai-guardian',
-    component: () => import(/* webpackChunkName: "ai-guardian" */ '../views/AIGuardian.vue')
   }
 ]
 
