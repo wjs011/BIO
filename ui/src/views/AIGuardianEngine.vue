@@ -42,7 +42,7 @@
         <div class="modal-content">
           <div class="modal-img-wrap">
             <img :src="displayImage" class="modal-img" />
-            <div class="scan-line" :style="{ top: scanLineTop + '%' }"></div>
+            <div class="scan-line" :style="{ top: scanLineTop + 'px' }" v-if="currentStep === 'analyzing'"></div>
           </div>
           <div class="modal-status">
             <div v-for="(msg, idx) in statusMessages" :key="idx" class="modal-status-text" v-show="currentStatusIndex >= idx">
@@ -78,7 +78,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick, watch } from 'vue'
+// 动态引入dotlottie-player
+if (typeof window !== 'undefined' && !window.__dotlottie_player_loaded) {
+  const script = document.createElement('script');
+  script.type = 'module';
+  script.src = 'https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs';
+  document.head.appendChild(script);
+  window.__dotlottie_player_loaded = true;
+}
 const samples = ref([
   { name: '东北虎', desc: '日间高清', image: 'https://placehold.co/160x160/1a1a1a/ffffff?text=Tiger', cover: new URL('@/assets/Picture/AI识别/东北虎.jpg', import.meta.url).href, id: 'CN-TGR-003', species: '东北虎', age: '5岁', health: '健康' },
   { name: '雪豹', desc: '夜间红外图像', image: 'https://placehold.co/160x160/2a2a2a/ffffff?text=Leopard', cover: new URL('@/assets/Picture/AI识别/雪豹.jpg', import.meta.url).href, id: 'CN-PNU-014', species: '雪豹', age: '3岁', health: '亚健康' },
@@ -137,7 +145,7 @@ function startAnalysis() {
   currentStatusIndex.value = 0
   scanTimer = setInterval(() => {
     scanLineTop.value += 4
-    if (scanLineTop.value >= 100) scanLineTop.value = 0
+    if (scanLineTop.value >= 148) scanLineTop.value = 0
   }, 30)
   statusTimer = setTimeout(showNextStatus, 800)
 }
