@@ -1,13 +1,34 @@
 <template>
   <div class="ai-guardian">
     <div class="page-banner">
-      <h1>增强型全球生物多样性AI守护者</h1>
+      <div class="banner-content">
+        <h1>加入全球生物多样性AI守<br>护者项目</h1>
+        <p>探索与我们合作的机会，共同运用AI技术守护地球的生物多样性。</p>
+        <div class="banner-stats">
+          <div class="stat-item">
+            <div class="stat-value">50+ 地区</div>
+            <div class="stat-label">全球覆盖</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">1000+</div>
+            <div class="stat-label">物种识别</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">24/7</div>
+            <div class="stat-label">数据分析</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">持续增长</div>
+            <div class="stat-label">合作伙伴</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="container">
       <section class="hero-section">
         <div class="hero-image-container">
-          <img src="@/assets/Picture/增强型全球生物多样性AI守护者/photo-1458724338480-79bc7a8352e4.webp" alt="AI守护者" class="hero-image">
+          <img src="@/assets/Picture/项目概览/f89e8c3f-c8ef-4e3c-9d05-500fde5f8f62.jpeg" alt="AI守护者" class="hero-image">
           <div class="hero-overlay">
             <h2>智能守护生物多样性</h2>
             <p>利用人工智能技术保护全球生态系统</p>
@@ -213,19 +234,58 @@ export default {
 }
 
 .page-banner {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), 
-              url('@/assets/Picture/增强型全球生物多样性AI守护者/QfrvcWxxuRiVtgfbTVMHxEGhbygJPaiT.webp') no-repeat center center;
+  background: linear-gradient(rgba(41, 107, 41, 0.8), rgba(39, 113, 39, 0.8)), 
+              url('@/assets/Picture/项目概览/cbddebbecZkvUMRgtkDrzkSdwkpKDQFF.jpeg') no-repeat center center;
   background-size: cover;
-  height: 250px;
+  height: 400px;
+  padding: 100px 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   color: white;
 }
 
+.banner-content {
+  max-width: 900px;
+  text-align: left;
+  position: relative;
+  left: -250px;
+}
+
 .page-banner h1 {
-  font-size: 3rem;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-shadow: none;
+  line-height: 1.2;
+}
+
+.banner-content p {
+  font-size: 1.2rem;
+  margin-bottom: 100px;
+  opacity: 0.9;
+}
+
+.banner-stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  min-width: 150px;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 1rem;
+  opacity: 0.8;
 }
 
 .container {

@@ -1,7 +1,24 @@
 <template>
   <div class="technique">
     <div class="page-banner">
-      <h1>核心技术</h1>
+      <div class="banner-content">
+        <h1>AI赋能的生物多样性守护</h1>
+        <p>探索我们的核心技术，革新野生动物保护模式。</p>
+        <div class="banner-features">
+          <div class="banner-feature-card">
+            <h4><span class="icon">🎯</span> 个体识别</h4>
+            <p>利用AI精准识别野生动物个体，实现精细化保护。</p>
+          </div>
+          <div class="banner-feature-card">
+            <h4><span class="icon">🌙</span> 夜间增强</h4>
+            <p>夜间增强技术，让黑暗中的野生动物无所遁形。</p>
+          </div>
+          <div class="banner-feature-card">
+            <h4><span class="icon">📊</span> 跨模态识别</h4>
+            <p>整合多种数据模态，全面掌握野生动物信息。</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="container">
@@ -217,25 +234,74 @@ export default {
 }
 
 .page-banner {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), 
-              url('@/assets/Picture/核心技术/7094d48f-df6f-4b19-aedf-72b46c76d4ad.jpeg') no-repeat center center;
+  background: linear-gradient(rgba(41, 107, 41, 0.8), rgba(39, 113, 39, 0.8)), 
+              url('@/assets/Picture/核心技术/accacaaaccaadRsRYgXZrXMkYyJwBpVc.jpeg') no-repeat center center;
   background-size: cover;
-  height: 250px;
+  height: 400px;
+  padding: 80px 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   color: white;
 }
 
+.banner-content {
+  max-width: 1200px;
+  text-align: center;
+}
+
 .page-banner h1 {
-  font-size: 3rem;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  font-size: 3.5rem;
+  font-weight: bold;
+  text-shadow: none;
+  margin-bottom: 15px;
+}
+
+.banner-content > p {
+  font-size: 1.2rem;
+  margin-bottom: 50px;
+  opacity: 0.9;
+}
+
+.banner-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  text-align: left;
+}
+
+.banner-feature-card {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 25px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.banner-feature-card h4 {
+  font-size: 1.3rem;
+  margin: 0 0 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.banner-feature-card .icon {
+  font-size: 1.5rem;
+}
+
+.banner-feature-card p {
+  font-size: 1rem;
+  opacity: 0.9;
+  line-height: 1.6;
+  margin: 0;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 50px 20px;
+  background-color: rgba(66, 185, 131, 0.1);
 }
 
 /* 技术概览部分 */
@@ -465,6 +531,10 @@ export default {
   .tech-content,
   .tech-content.reversed {
     flex-direction: column;
+  }
+  
+  .banner-features {
+    grid-template-columns: 1fr;
   }
   
   .tech-highlights {
