@@ -13,6 +13,7 @@
                 <router-link to="/technique">核心技术</router-link>
               </div>
             </div>
+            <router-link to="/map">生态地图</router-link>
           </div>
         </div>
       </nav>
