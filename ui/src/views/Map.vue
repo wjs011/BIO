@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const mapContainer = ref(null);
 const map = ref(null);
-const AMap = window.AMap;
+let AMap = null; // Changed to let instead of const with window.AMap
 const trackingData = ref([]);
 const selectedSpecies = ref('');
 const selectedSpeciesId = ref('');
@@ -13,6 +13,8 @@ const availableSpecies = ref([]);
 const availableSpeciesIds = ref({});
 const availableAnimalIds = ref({});
 const polylines = ref([]);
+const mapLoaded = ref(false); // Track if map has been loaded
+const loadingData = ref(false); // Track if data is being loaded
 
 // Check if API key is properly set
 const isApiKeySet = computed(() => {
@@ -21,6 +23,7 @@ const isApiKeySet = computed(() => {
 
 // Fetch available species and their IDs
 const fetchAvailableSpecies = async () => {
+  loadingData.value = true;
   try {
     const response = await axios.get('/api/tracking/all');
     const data = response.data;
@@ -41,7 +44,6 @@ const fetchAvailableSpecies = async () => {
       speciesIdsMap[item.species].add(item.speciesId);
       
       // Track animal IDs per species and speciesId combination
-      const speciesAndId = `${item.species}-${item.speciesId}`;
       if (!animalIdsMap[item.species][item.speciesId]) {
         animalIdsMap[item.species][item.speciesId] = new Set();
       }
@@ -72,12 +74,14 @@ const fetchAvailableSpecies = async () => {
         selectedSpeciesId.value = availableSpeciesIds.value[selectedSpecies.value][0];
         if (availableAnimalIds.value[selectedSpecies.value]?.[selectedSpeciesId.value]?.length > 0) {
           selectedAnimalId.value = availableAnimalIds.value[selectedSpecies.value][selectedSpeciesId.value][0];
-          fetchTrackingData();
+          await fetchTrackingData();
         }
       }
     }
   } catch (error) {
     console.error('Error fetching available species:', error);
+  } finally {
+    loadingData.value = false;
   }
 };
 
@@ -85,12 +89,19 @@ const fetchAvailableSpecies = async () => {
 const fetchTrackingData = async () => {
   if (!selectedSpecies.value || !selectedSpeciesId.value || !selectedAnimalId.value) return;
   
+  loadingData.value = true;
   try {
     const response = await axios.get(`/api/tracking/species/${selectedSpecies.value}/id/${selectedSpeciesId.value}/animal/${selectedAnimalId.value}`);
     trackingData.value = response.data;
-    displayTrackingOnMap();
+    
+    // Display tracking data only if map is loaded
+    if (mapLoaded.value) {
+      displayTrackingOnMap();
+    }
   } catch (error) {
     console.error('Error fetching tracking data:', error);
+  } finally {
+    loadingData.value = false;
   }
 };
 
@@ -146,102 +157,189 @@ const formatCoordinate = (coordinate) => {
 
 // Function to display tracking data on the map
 const displayTrackingOnMap = () => {
+  if (!map.value || !AMap) return; // Ensure map and AMap are available
+  
   // Clear existing polylines
   polylines.value.forEach(polyline => {
     map.value.remove(polyline);
   });
   polylines.value = [];
   
-  if (trackingData.value.length < 2) return;
+  if (!trackingData.value || trackingData.value.length < 2) return;
   
-  // Sort data by timestamp
-  const sortedData = [...trackingData.value].sort((a, b) => 
-    new Date(a.timestamp) - new Date(b.timestamp)
-  );
-  
-  // Group tracking points by day to use different colors
-  const trackingByDay = {};
-  
-  sortedData.forEach(point => {
-    const date = new Date(point.timestamp).toISOString().split('T')[0];
-    if (!trackingByDay[date]) {
-      trackingByDay[date] = [];
-    }
-    // Parse longitude and latitude to numbers in case they're returned as strings
-    const longitude = typeof point.longitude === 'string' ? parseFloat(point.longitude) : Number(point.longitude);
-    const latitude = typeof point.latitude === 'string' ? parseFloat(point.latitude) : Number(point.latitude);
-    trackingByDay[date].push([longitude, latitude]);
-  });
-  
-  // Create a polyline for each day with different colors
-  Object.keys(trackingByDay).forEach(date => {
-    const path = trackingByDay[date];
-    if (path.length > 1) {
-      const polyline = new AMap.Polyline({
-        path: path,
-        strokeColor: getRandomColor(),
-        strokeWeight: 5,
-        strokeOpacity: 0.8
-      });
-      
-      map.value.add(polyline);
-      polylines.value.push(polyline);
-      
-      // Add marker for each point
-      path.forEach((point, index) => {
-        const marker = new AMap.Marker({
-          position: point,
-          content: `<div class="custom-marker">${index + 1}</div>`
-        });
-        map.value.add(marker);
-        polylines.value.push(marker);
-      });
-    }
-  });
-  
-  // Fit the map to show all points
-  if (sortedData.length > 0) {
-    // Convert coordinates to numbers for min/max calculation
-    const longitudes = sortedData.map(p => typeof p.longitude === 'string' ? parseFloat(p.longitude) : Number(p.longitude));
-    const latitudes = sortedData.map(p => typeof p.latitude === 'string' ? parseFloat(p.latitude) : Number(p.latitude));
-    
-    const bounds = new AMap.Bounds(
-      [Math.min(...longitudes), Math.min(...latitudes)],
-      [Math.max(...longitudes), Math.max(...latitudes)]
+  try {
+    // Sort data by timestamp
+    const sortedData = [...trackingData.value].sort((a, b) => 
+      new Date(a.timestamp) - new Date(b.timestamp)
     );
-    map.value.setBounds(bounds);
+    
+    // Group tracking points by day to use different colors
+    const trackingByDay = {};
+    
+    sortedData.forEach(point => {
+      if (!point.timestamp || !point.longitude || !point.latitude) return;
+      
+      const date = new Date(point.timestamp).toISOString().split('T')[0];
+      if (!trackingByDay[date]) {
+        trackingByDay[date] = [];
+      }
+      
+      // Parse longitude and latitude to numbers in case they're returned as strings
+      let longitude, latitude;
+      
+      try {
+        longitude = typeof point.longitude === 'string' ? parseFloat(point.longitude) : Number(point.longitude);
+        latitude = typeof point.latitude === 'string' ? parseFloat(point.latitude) : Number(point.latitude);
+        
+        // Skip invalid coordinates
+        if (isNaN(longitude) || isNaN(latitude)) return;
+        
+        trackingByDay[date].push([longitude, latitude]);
+      } catch (err) {
+        console.error('Invalid coordinate data:', point, err);
+      }
+    });
+    
+    // Create a polyline for each day with different colors
+    Object.keys(trackingByDay).forEach(date => {
+      const path = trackingByDay[date];
+      if (path.length > 1) {
+        try {
+          const polyline = new AMap.Polyline({
+            path: path,
+            strokeColor: getRandomColor(),
+            strokeWeight: 5,
+            strokeOpacity: 0.8,
+            zIndex: 100
+          });
+          
+          map.value.add(polyline);
+          polylines.value.push(polyline);
+          
+          // Add marker for each point
+          path.forEach((point, index) => {
+            const marker = new AMap.Marker({
+              position: point,
+              content: `<div class="custom-marker">${index + 1}</div>`,
+              offset: new AMap.Pixel(-10, -10),
+              zIndex: 101
+            });
+            map.value.add(marker);
+            polylines.value.push(marker);
+          });
+        } catch (err) {
+          console.error('Error creating polyline:', err);
+        }
+      }
+    });
+    
+    // Fit the map to show all points
+    if (sortedData.length > 0) {
+      try {
+        // Convert coordinates to numbers for min/max calculation
+        const validPoints = sortedData.filter(p => 
+          p.longitude !== null && 
+          p.latitude !== null && 
+          !isNaN(Number(p.longitude)) && 
+          !isNaN(Number(p.latitude))
+        );
+        
+        if (validPoints.length > 0) {
+          const longitudes = validPoints.map(p => typeof p.longitude === 'string' ? parseFloat(p.longitude) : Number(p.longitude));
+          const latitudes = validPoints.map(p => typeof p.latitude === 'string' ? parseFloat(p.latitude) : Number(p.latitude));
+          
+          const minLng = Math.min(...longitudes);
+          const minLat = Math.min(...latitudes);
+          const maxLng = Math.max(...longitudes);
+          const maxLat = Math.max(...latitudes);
+          
+          const bounds = new AMap.Bounds(
+            [minLng, minLat],
+            [maxLng, maxLat]
+          );
+          
+          // Add padding to bounds
+          map.value.setBounds(bounds, false, [50, 50, 50, 50]);
+        }
+      } catch (err) {
+        console.error('Error setting map bounds:', err);
+      }
+    }
+  } catch (error) {
+    console.error('Error displaying tracking data on map:', error);
   }
 };
 
 // Initialize map
 const initMap = () => {
-  map.value = new AMap.Map(mapContainer.value, {
-    resizeEnable: true,
-    zoom: 5,
-    center: [116.397428, 39.90923] // Beijing as default center
-  });
+  if (!AMap) {
+    console.error('AMap is not loaded');
+    return;
+  }
   
-  // Add map controls
-  map.value.addControl(new AMap.Scale());
-  map.value.addControl(new AMap.ToolBar());
-  
-  // Load data after map is initialized
-  fetchAvailableSpecies();
+  try {
+    map.value = new AMap.Map(mapContainer.value, {
+      resizeEnable: true,
+      zoom: 5,
+      center: [116.397428, 39.90923] // Beijing as default center
+    });
+    
+    // Add map controls
+    map.value.addControl(new AMap.Scale());
+    map.value.addControl(new AMap.ToolBar());
+    
+    // Set map loaded flag
+    mapLoaded.value = true;
+    
+    // Load data after map is initialized
+    fetchAvailableSpecies();
+    
+    // Display data if already loaded
+    if (trackingData.value.length > 0) {
+      displayTrackingOnMap();
+    }
+  } catch (error) {
+    console.error('Error initializing map:', error);
+  }
 };
 
-onMounted(() => {
-  // Load AMap API if not already loaded
-  if (!window.AMap) {
+// Load AMap API
+const loadAmapAPI = () => {
+  return new Promise((resolve, reject) => {
+    if (window.AMap) {
+      AMap = window.AMap;
+      resolve();
+      return;
+    }
+    
     const script = document.createElement('script');
     // Using API key from vue.config.js configuration
-    script.src = `https://webapi.amap.com/maps?v=2.0&key=${process.env.VUE_APP_AMAP_KEY}`; 
+    script.src = `https://webapi.amap.com/maps?v=2.0&key=${process.env.VUE_APP_AMAP_KEY}`;
     script.async = true;
+    
     script.onload = () => {
-      initMap();
+      if (window.AMap) {
+        AMap = window.AMap;
+        resolve();
+      } else {
+        reject(new Error('AMap not loaded properly'));
+      }
     };
+    
+    script.onerror = () => {
+      reject(new Error('Failed to load AMap API'));
+    };
+    
     document.head.appendChild(script);
-  } else {
+  });
+};
+
+onMounted(async () => {
+  try {
+    await loadAmapAPI();
     initMap();
+  } catch (error) {
+    console.error('Failed to load map:', error);
   }
 });
 
@@ -288,6 +386,8 @@ onBeforeUnmount(() => {
     <div class="api-key-reminder" v-if="!isApiKeySet">
       <p>⚠️ Please update the AMap API key in ui/vue.config.js file before using the map.</p>
     </div>
+
+    <div class="loading" v-if="loadingData">Loading data...</div>
     
     <div class="tracking-info" v-if="trackingData.length > 0">
       <h3>Tracking Data for Animal {{ selectedAnimalId }}</h3>
@@ -325,6 +425,7 @@ onBeforeUnmount(() => {
   display: flex;
   gap: 20px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .control-group {
@@ -350,6 +451,17 @@ select {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.loading {
+  padding: 10px;
+  background-color: #e7f3fe;
+  color: #0c63e4;
+  margin: 10px 0;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
 }
 
 .tracking-info {
