@@ -2,6 +2,15 @@
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import axios from 'axios';
 
+// 动态引入dotlottie-player
+if (typeof window !== 'undefined' && !window.__dotlottie_player_loaded) {
+  const script = document.createElement('script');
+  script.type = 'module';
+  script.src = 'https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs';
+  document.head.appendChild(script);
+  window.__dotlottie_player_loaded = true;
+}
+
 const mapContainer = ref(null);
 const map = ref(null);
 let AMap = null; // Changed to let instead of const with window.AMap
@@ -535,7 +544,9 @@ onBeforeUnmount(() => {
       <p>⚠️ 请在ui/vue.config.js文件中更新高德地图API密钥后再使用地图。</p>
     </div>
 
-    <div class="loading" v-if="loadingData">数据加载中...</div>
+    <div v-if="loadingData" class="lottie-loading">
+      <dotlottie-player src="https://lottie.host/8c203469-4f6e-4d77-9e53-16c99850927b/QXKtfMmtJv.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay />
+    </div>
     
     <div ref="mapContainer" class="map-container"></div>
     
@@ -705,5 +716,12 @@ th {
 
 .retry-button:hover {
   background-color: #45a049;
+}
+
+.lottie-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
 }
 </style>
