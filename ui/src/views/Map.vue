@@ -181,6 +181,41 @@ const fetchTrackingData = async () => {
 };
 
 // Function to handle species selection change
+// 添加动物图标映射
+const getAnimalIcon = (species) => {
+  // 根据物种名称返回相应图标
+  const iconMap = {
+    'tiger': '🐅',
+    'panda': '🐼',
+    'elephant': '🐘',
+    'rhino': '🦏',
+    'whale': '🐋',
+    'dolphin': '🐬',
+    'sea turtle': '🐢',
+    'polar bear': '🐻‍❄️',
+    'wolf': '🐺',
+    'eagle': '🦅',
+    'leopard': '🐆',
+    'gorilla': '🦍',
+    'orangutan': '🦧',
+    'shark': '🦈',
+    'snake': '🐍',
+    'crocodile': '🐊',
+    'lion': '🦁'
+  };
+  
+  // 转换为小写并尝试匹配
+  const lowerSpecies = species?.toLowerCase() || '';
+  for (const [key, icon] of Object.entries(iconMap)) {
+    if (lowerSpecies.includes(key)) {
+      return icon;
+    }
+  }
+  
+  // 默认返回一般动物图标
+  return '🐾';
+};
+
 const handleSpeciesChange = () => {
   // Reset species ID and animal ID when species changes
   selectedSpeciesId.value = availableSpeciesIds.value[selectedSpecies.value]?.[0] || '';
@@ -537,17 +572,19 @@ onBeforeUnmount(() => {
         <div class="sidebar-resizer" @mousedown="startResizing"></div>
         
         <div class="controls">
+          <h3 class="sidebar-title">🌍 野生动物追踪控制台</h3>
+          
           <div class="control-group">
-            <label for="species">物种:</label>
+            <label for="species">🦁 物种:</label>
             <select id="species" v-model="selectedSpecies" @change="handleSpeciesChange">
               <option v-for="species in availableSpecies" :key="species" :value="species">
-                {{ species }}
+                <span v-if="species">{{ getAnimalIcon(species) }}</span> {{ species }}
               </option>
             </select>
           </div>
           
           <div class="control-group">
-            <label for="speciesId">物种ID:</label>
+            <label for="speciesId">🔢 物种ID:</label>
             <select id="speciesId" v-model="selectedSpeciesId" @change="handleSpeciesIdChange">
               <option v-for="id in availableSpeciesIds[selectedSpecies] || []" :key="id" :value="id">
                 {{ id }}
@@ -556,7 +593,7 @@ onBeforeUnmount(() => {
           </div>
 
           <div class="control-group">
-            <label for="animalId">动物ID:</label>
+            <label for="animalId">🏷️ 动物ID:</label>
             <select id="animalId" v-model="selectedAnimalId" @change="handleAnimalIdChange">
               <option v-for="id in availableAnimalIds[selectedSpecies]?.[selectedSpeciesId] || []" :key="id" :value="id">
                 {{ id }}
@@ -570,14 +607,17 @@ onBeforeUnmount(() => {
         </div>
         
         <div class="tracking-info" v-if="trackingData.length > 0">
-          <h3>动物 {{ selectedAnimalId }} 的追踪数据</h3>
+          <h3 class="tracking-header">
+            <span class="animal-icon">{{ getAnimalIcon(selectedSpecies) }}</span>
+            {{ selectedSpecies }} (ID: {{ selectedAnimalId }}) 的追踪数据
+          </h3>
           <div class="info-table-container">
             <table>
               <thead>
                 <tr>
-                  <th>时间</th>
-                  <th>位置</th>
-                  <th>坐标</th>
+                  <th>⏱️ 时间</th>
+                  <th>📍 位置</th>
+                  <th>🧭 坐标</th>
                 </tr>
               </thead>
               <tbody>
@@ -595,16 +635,23 @@ onBeforeUnmount(() => {
       <!-- 右侧地图区域 -->
       <div class="map-area">
         <div class="error-message" v-if="errorMessage">
-          <p>{{ errorMessage }}</p>
+          <p>❌ {{ errorMessage }}</p>
         </div>
 
         <div class="api-key-reminder" v-if="!isApiKeySet">
           <p>⚠️ 请在ui/vue.config.js文件中更新高德地图API密钥后再使用地图。</p>
         </div>
 
-        <div class="loading" v-if="loadingData">数据加载中...</div>
+        <div class="loading" v-if="loadingData">
+          <span class="loading-icon">🔄</span> 数据加载中...
+        </div>
         
-        <div ref="mapContainer" class="map-container"></div>
+        <div ref="mapContainer" class="map-container">
+          <div class="eco-tips" v-if="trackingData.length > 0">
+            追踪珍稀野生动物的迁徙路线对于生态保护和栖息地保护至关重要。
+          </div>
+          <div class="eco-badge">生物多样性保护项目</div>
+        </div>
       </div>
     </div>
   </div>
@@ -617,6 +664,8 @@ onBeforeUnmount(() => {
   height: calc(100vh - 60px); /* 减去顶栏高度 */
   padding: 20px;
   margin-top: 60px; /* 为顶栏预留空间 */
+  background-color: #f0f8f4; /* 更改为淡绿色调背景 */
+  font-family: 'Helvetica Neue', Arial, sans-serif;
 }
 
 .main-content {
@@ -624,6 +673,9 @@ onBeforeUnmount(() => {
   flex: 1;
   height: 100%;
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  background-color: #fff;
 }
 
 /* 左侧边栏样式 */
@@ -632,13 +684,22 @@ onBeforeUnmount(() => {
   min-width: 250px;
   max-width: 50%;
   overflow-y: auto;
-  background-color: #f8f9fa;
-  border-radius: 8px 0 0 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  border-radius: 12px 0 0 12px;
+  box-shadow: 3px 0 10px rgba(0, 0, 0, 0.05);
   position: relative;
-  padding: 15px;
-  transition: width 0.3s ease;
-  margin-right: 10px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  margin-right: 1px;
+  border-right: 1px solid #d7e8d0; /* 淡绿色边框 */
+}
+
+.sidebar h3 {
+  color: #2e7d32; /* 深绿色标题 */
+  font-size: 18px;
+  margin-top: 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #81c784; /* 绿色底部边框 */
 }
 
 /* 拉伸手柄 */
@@ -655,15 +716,19 @@ onBeforeUnmount(() => {
 .sidebar-resizer::after {
   content: '';
   position: absolute;
-  top: 0;
+  top: 50%;
   right: 5px;
-  width: 2px;
-  height: 100%;
-  background-color: #ddd;
+  width: 4px;
+  height: 40px;
+  background-color: #dfe6e9;
+  border-radius: 4px;
+  transform: translateY(-50%);
+  transition: all 0.2s ease;
 }
 
 .sidebar-resizer:hover::after {
-  background-color: #0c63e4;
+  background-color: #4caf50; /* 绿色调 */
+  box-shadow: 0 0 6px rgba(76, 175, 80, 0.5);
 }
 
 /* 右侧地图区域 */
@@ -672,6 +737,9 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background-color: #f1f8e9; /* 淡绿色背景 */
+  border-radius: 0 12px 12px 0;
+  padding: 15px;
 }
 
 .controls {
@@ -679,6 +747,11 @@ onBeforeUnmount(() => {
   flex-direction: column;
   gap: 15px;
   margin-bottom: 20px;
+  background-color: #e8f5e9; /* 更浅的绿色背景 */
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.1);
+  border-left: 3px solid #66bb6a; /* 增加绿色左侧边框强调 */
 }
 
 .control-group {
@@ -687,75 +760,161 @@ onBeforeUnmount(() => {
 }
 
 label {
-  margin-bottom: 5px;
-  font-weight: bold;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #2e7d32; /* 深绿色标签 */
+  font-size: 14px;
+  letter-spacing: 0.3px;
 }
 
 select {
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #dde1e7;
+  background-color: #fff;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  color: #2c3e50;
+  font-size: 14px;
+  transition: all 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+}
+
+select:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+  outline: none;
 }
 
 .map-container {
   flex: 1;
   min-height: 400px;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   position: relative;
+  border: 1px solid #e6eaf0;
+}
+
+.map-container::before {
+  content: '🌿 珍稀动物迁徙保护追踪';
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(76, 175, 80, 0.9);
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  color: white;
+  z-index: 1;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  font-size: 14px;
+  letter-spacing: 0.5px;
 }
 
 .loading {
-  padding: 10px;
-  background-color: #e7f3fe;
-  color: #0c63e4;
+  padding: 12px;
+  background-color: #e8f5e9;
+  color: #2e7d32;
   margin: 10px 0;
-  border-radius: 4px;
+  border-radius: 8px;
   text-align: center;
   font-weight: bold;
+  box-shadow: 0 2px 5px rgba(76, 175, 80, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-icon {
+  display: inline-block;
+  animation: spin 1.5s infinite linear;
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .error-message {
-  padding: 10px;
-  background-color: #f8d7da;
-  color: #721c24;
+  padding: 12px;
+  background-color: #fdf2f3;
+  color: #842029;
   margin: 10px 0;
-  border-radius: 4px;
+  border-radius: 8px;
   text-align: center;
   font-weight: bold;
+  box-shadow: 0 2px 5px rgba(132, 32, 41, 0.1);
+  border-left: 4px solid #dc3545;
 }
 
 .tracking-info {
   margin-top: 20px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #a5d6a7;
   padding-top: 15px;
+  position: relative;
+}
+
+.tracking-info::before {
+  content: '🦁 野生动物保护追踪';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  padding: 0 15px;
+  font-size: 14px;
+  color: #2e7d32;
+  font-weight: 600;
 }
 
 .info-table-container {
   overflow-x: auto;
   max-height: calc(100vh - 300px);
   overflow-y: auto;
+  border-radius: 8px;
+  border: 1px solid #a5d6a7; /* 绿色边框 */
+  margin-top: 10px;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.1);
 }
 
 table {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 0;
+  background-color: #fff;
 }
 
 th, td {
-  padding: 8px 12px;
+  padding: 12px;
   text-align: left;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #eaeef2;
 }
 
 th {
-  background-color: #f5f5f5;
-  font-weight: bold;
+  background-color: #e8f5e9;
+  font-weight: 600;
   position: sticky;
   top: 0;
   z-index: 1;
+  color: #2e7d32;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover {
+  background-color: #f9fafc;
 }
 
 .custom-marker {
@@ -765,10 +924,16 @@ th {
   font-weight: bold;
   text-align: center;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  line-height: 20px;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
   font-size: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+}
+
+.custom-marker:hover {
+  transform: scale(1.2);
 }
 
 .start-marker {
@@ -776,9 +941,10 @@ th {
   border-color: #27ae60;
   color: white;
   font-size: 14px;
-  width: 24px;
-  height: 24px;
-  line-height: 24px;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.3);
 }
 
 .end-marker {
@@ -786,33 +952,151 @@ th {
   border-color: #c0392b;
   color: white;
   font-size: 14px;
-  width: 24px;
-  height: 24px;
-  line-height: 24px;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.3);
 }
 
 .api-key-reminder {
   margin: 15px 0;
-  padding: 12px;
+  padding: 15px;
   background-color: #fff3cd;
   color: #856404;
   border: 1px solid #ffeeba;
-  border-radius: 4px;
+  border-radius: 8px;
   font-weight: bold;
+  box-shadow: 0 2px 5px rgba(133, 100, 4, 0.1);
+  display: flex;
+  align-items: center;
+}
+
+.api-key-reminder p::before {
+  content: "⚠️";
+  margin-right: 8px;
+  font-size: 18px;
 }
 
 .retry-button {
-  margin-top: 20px;
-  padding: 8px 16px;
-  background-color: #4CAF50;
+  padding: 10px 16px;
+  background-color: #43a047; /* 绿色按钮 */
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(67, 160, 71, 0.3);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.retry-button::before {
+  content: "🌱";  /* 使用植物图标代替刷新图标 */
+  margin-right: 8px;
+  font-size: 16px;
 }
 
 .retry-button:hover {
-  background-color: #45a049;
+  background-color: #388e3c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(67, 160, 71, 0.4);
+}
+
+.retry-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 3px rgba(67, 160, 71, 0.4);
+}
+
+.sidebar-title {
+  display: flex;
+  align-items: center;
+  color: #2e7d32;
+  font-size: 18px;
+  margin-top: 0;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #81c784;
+}
+
+/* 动物类型图标映射 */
+.animal-icon {
+  display: inline-block;
+  margin-right: 5px;
+  font-size: 16px;
+}
+
+/* 错误信息样式增强 */
+.error-message p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-message p::before {
+  margin-right: 8px;
+}
+
+.tracking-header {
+  display: flex;
+  align-items: center;
+  color: #2e7d32;
+  margin-bottom: 15px;
+}
+
+.tracking-header .animal-icon {
+  font-size: 24px;
+  margin-right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #e8f5e9;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(76, 175, 80, 0.2);
+}
+
+/* 添加生态保护提示框 */
+.eco-tips {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background-color: rgba(76, 175, 80, 0.9);
+  padding: 12px 20px;
+  border-radius: 10px;
+  color: white;
+  max-width: 300px;
+  font-size: 13px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.eco-tips::before {
+  content: '💡';
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+/* 生态保护标签 */
+.eco-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #4caf50;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+}
+
+.eco-badge::before {
+  content: '🌿';
+  margin-right: 5px;
 }
 </style>
