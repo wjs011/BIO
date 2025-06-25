@@ -54,7 +54,6 @@ export default {
   color: #2c3e50;
   margin: 0;
   padding: 0;
-  background-color: #f5f5f5;
 }
 
 body {
@@ -64,14 +63,13 @@ body {
 }
 
 header {
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: fixed;
-  top: 20px;
-  left: 150px;
-  right: 150px;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
-  background-color: #000000;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 nav {
@@ -90,7 +88,7 @@ nav {
 .logo {
   font-weight: bold;
   font-size: 1.4rem;
-  color: #ffffff;
+  color: #42b983;
 }
 
 .nav-links {
@@ -106,7 +104,7 @@ nav {
 
 .dropdown-title {
   font-weight: 500;
-  color: #f0f0f0;
+  color: #2c3e50;
   cursor: pointer;
   padding: 0 8px;
   transition: color 0.3s ease;
@@ -118,14 +116,13 @@ nav {
 
 .dropdown-content {
   position: absolute;
-  background-color: rgba(25, 25, 25, 0.9);
+  background-color: #fff;
   min-width: 120px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   z-index: 1001;
   flex-direction: column;
-  border-radius: 8px;
+  border-radius: 4px;
   margin-top: 8px;
-  backdrop-filter: blur(5px);
 }
 
 .dropdown-content .router-link-active,
@@ -138,7 +135,7 @@ nav {
 }
 
 .dropdown-content a {
-  color: #f0f0f0;
+  color: #2c3e50;
   padding: 10px 16px;
   text-decoration: none;
   display: block;
@@ -147,7 +144,7 @@ nav {
 }
 
 .dropdown-content a:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: #f0f9f5;
 }
 
 .dropdown-content[style*="display: block"],
@@ -168,7 +165,7 @@ img {
 
 nav a,
 nav a:visited {
-  color: #e0e0e0;
+  color: #2c3e50;
   text-decoration: none;
 }
 

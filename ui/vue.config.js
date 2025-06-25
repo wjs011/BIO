@@ -19,7 +19,7 @@ module.exports = defineConfig({
         target: 'http://localhost:9090',     //代理的目标地址
         changeOrigin: true,              //是否设置同源，输入是的
         pathRewrite: {                   //路径重写
-          '^/api': ''                     //选择忽略拦截器里面的内容
+          '^/api': ''                     //恢复路径重写，因为我们已经在Controller和前端请求中都移除了/api前缀
         },
         logLevel: 'debug' // 启用调试日志
       }
