@@ -6,6 +6,7 @@
           <div class="logo">生物多样性AI守护者</div>
           <div class="nav-links">
             <router-link to="/">首页</router-link>
+            <router-link to="/ai-engine">AI个体识别引擎</router-link>
             <div class="dropdown" @mouseenter="showDropdown" @mouseleave="hideDropdown">
               <span class="dropdown-title">项目介绍</span>
               <div class="dropdown-content" v-show="dropdownVisible" @mouseenter="showDropdown" @mouseleave="hideDropdown">
@@ -54,6 +55,7 @@ export default {
   color: #2c3e50;
   margin: 0;
   padding: 0;
+  background-color: #f5f5f5;
 }
 
 body {
@@ -63,13 +65,14 @@ body {
 }
 
 header {
-  background-color: #ffffff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 20px;
+  left: 150px;
+  right: 150px;
   z-index: 1000;
+  background-color: #000000;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 nav {
@@ -88,7 +91,7 @@ nav {
 .logo {
   font-weight: bold;
   font-size: 1.4rem;
-  color: #42b983;
+  color: #ffffff;
 }
 
 .nav-links {
@@ -104,7 +107,7 @@ nav {
 
 .dropdown-title {
   font-weight: 500;
-  color: #2c3e50;
+  color: #f0f0f0;
   cursor: pointer;
   padding: 0 8px;
   transition: color 0.3s ease;
@@ -116,13 +119,14 @@ nav {
 
 .dropdown-content {
   position: absolute;
-  background-color: #fff;
+  background-color: rgba(25, 25, 25, 0.9);
   min-width: 120px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
   z-index: 1001;
   flex-direction: column;
-  border-radius: 4px;
+  border-radius: 8px;
   margin-top: 8px;
+  backdrop-filter: blur(5px);
 }
 
 .dropdown-content .router-link-active,
@@ -135,7 +139,7 @@ nav {
 }
 
 .dropdown-content a {
-  color: #2c3e50;
+  color: #f0f0f0;
   padding: 10px 16px;
   text-decoration: none;
   display: block;
@@ -144,7 +148,7 @@ nav {
 }
 
 .dropdown-content a:hover {
-  background: #f0f9f5;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .dropdown-content[style*="display: block"],
@@ -165,7 +169,7 @@ img {
 
 nav a,
 nav a:visited {
-  color: #2c3e50;
+  color: #e0e0e0;
   text-decoration: none;
 }
 
