@@ -17,6 +17,43 @@ const mapLoaded = ref(false); // Track if map has been loaded
 const loadingData = ref(false); // Track if data is being loaded
 const errorMessage = ref(''); // 添加错误信息显示
 
+// 添加侧边栏宽度调整相关变量
+const sidebar = ref(null);
+const isDragging = ref(false);
+const initialWidth = ref(350);
+
+// 侧边栏拖拽开始函数
+const startResizing = (event) => {
+  isDragging.value = true;
+  document.addEventListener('mousemove', resize);
+  document.addEventListener('mouseup', stopResizing);
+};
+
+// 侧边栏拖拽改变大小函数
+const resize = (event) => {
+  if (!isDragging.value || !sidebar.value) return;
+  
+  const newWidth = event.clientX - sidebar.value.getBoundingClientRect().left;
+  
+  // 应用最小/最大宽度限制
+  if (newWidth < 250) return;
+  if (newWidth > window.innerWidth * 0.5) return;
+  
+  sidebar.value.style.width = `${newWidth}px`;
+};
+
+// 侧边栏拖拽结束函数
+const stopResizing = () => {
+  isDragging.value = false;
+  document.removeEventListener('mousemove', resize);
+  document.removeEventListener('mouseup', stopResizing);
+  
+  // 地图可能需要重新渲染来适应新的容器大小
+  if (map.value) {
+    map.value.resize();
+  }
+};
+
 // Check if API key is properly set
 const isApiKeySet = computed(() => {
   return process.env.VUE_APP_AMAP_KEY && process.env.VUE_APP_AMAP_KEY !== 'YOUR_AMAP_KEY_HERE';
@@ -29,8 +66,8 @@ const fetchAvailableSpecies = async () => {
   
   try {
     console.log('开始请求所有动物追踪数据');
-    // 直接使用/tracking路径，删除/api前缀
-    const response = await axios.get('/tracking/all', {
+    // 使用/api前缀以正确经过代理
+    const response = await axios.get('/api/tracking/all', {
       timeout: 10000 // 设置超时时间
     });
     console.log('获取到的数据:', response.data);
@@ -116,8 +153,8 @@ const fetchTrackingData = async () => {
   
   try {
     console.log(`获取动物追踪数据: ${selectedSpecies.value}/${selectedSpeciesId.value}/${selectedAnimalId.value}`);
-    // 直接使用/tracking路径，删除/api前缀
-    const response = await axios.get(`/tracking/species/${selectedSpecies.value}/id/${selectedSpeciesId.value}/animal/${selectedAnimalId.value}`, {
+    // 使用/api前缀以正确经过代理
+    const response = await axios.get(`/api/tracking/species/${selectedSpecies.value}/id/${selectedSpeciesId.value}/animal/${selectedAnimalId.value}`, {
       timeout: 10000 // 设置超时时间
     });
     console.log('获取到的追踪数据:', response.data);
@@ -494,70 +531,80 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="map-page">
-    <div class="controls">
-      <div class="control-group">
-        <label for="species">物种:</label>
-        <select id="species" v-model="selectedSpecies" @change="handleSpeciesChange">
-          <option v-for="species in availableSpecies" :key="species" :value="species">
-            {{ species }}
-          </option>
-        </select>
-      </div>
-      
-      <div class="control-group">
-        <label for="speciesId">物种ID:</label>
-        <select id="speciesId" v-model="selectedSpeciesId" @change="handleSpeciesIdChange">
-          <option v-for="id in availableSpeciesIds[selectedSpecies] || []" :key="id" :value="id">
-            {{ id }}
-          </option>
-        </select>
+    <div class="main-content">
+      <!-- 左侧追踪数据边栏 -->
+      <div ref="sidebar" class="sidebar" :class="{ 'has-data': trackingData.length > 0 }">
+        <div class="sidebar-resizer" @mousedown="startResizing"></div>
+        
+        <div class="controls">
+          <div class="control-group">
+            <label for="species">物种:</label>
+            <select id="species" v-model="selectedSpecies" @change="handleSpeciesChange">
+              <option v-for="species in availableSpecies" :key="species" :value="species">
+                {{ species }}
+              </option>
+            </select>
+          </div>
+          
+          <div class="control-group">
+            <label for="speciesId">物种ID:</label>
+            <select id="speciesId" v-model="selectedSpeciesId" @change="handleSpeciesIdChange">
+              <option v-for="id in availableSpeciesIds[selectedSpecies] || []" :key="id" :value="id">
+                {{ id }}
+              </option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="animalId">动物ID:</label>
+            <select id="animalId" v-model="selectedAnimalId" @change="handleAnimalIdChange">
+              <option v-for="id in availableAnimalIds[selectedSpecies]?.[selectedSpeciesId] || []" :key="id" :value="id">
+                {{ id }}
+              </option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <button @click="retryFetch" class="retry-button">重新获取数据</button>
+          </div>
+        </div>
+        
+        <div class="tracking-info" v-if="trackingData.length > 0">
+          <h3>动物 {{ selectedAnimalId }} 的追踪数据</h3>
+          <div class="info-table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>时间</th>
+                  <th>位置</th>
+                  <th>坐标</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(point, index) in trackingData" :key="index">
+                  <td>{{ new Date(point.timestamp).toLocaleString() }}</td>
+                  <td>{{ point.location }}</td>
+                  <td>{{ formatCoordinate(point.latitude) }}, {{ formatCoordinate(point.longitude) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
-      <div class="control-group">
-        <label for="animalId">动物ID:</label>
-        <select id="animalId" v-model="selectedAnimalId" @change="handleAnimalIdChange">
-          <option v-for="id in availableAnimalIds[selectedSpecies]?.[selectedSpeciesId] || []" :key="id" :value="id">
-            {{ id }}
-          </option>
-        </select>
-      </div>
+      <!-- 右侧地图区域 -->
+      <div class="map-area">
+        <div class="error-message" v-if="errorMessage">
+          <p>{{ errorMessage }}</p>
+        </div>
 
-      <div class="control-group">
-        <button @click="retryFetch" class="retry-button">重新获取数据</button>
-      </div>
-    </div>
-    
-    <div class="error-message" v-if="errorMessage">
-      <p>{{ errorMessage }}</p>
-    </div>
+        <div class="api-key-reminder" v-if="!isApiKeySet">
+          <p>⚠️ 请在ui/vue.config.js文件中更新高德地图API密钥后再使用地图。</p>
+        </div>
 
-    <div class="api-key-reminder" v-if="!isApiKeySet">
-      <p>⚠️ 请在ui/vue.config.js文件中更新高德地图API密钥后再使用地图。</p>
-    </div>
-
-    <div class="loading" v-if="loadingData">数据加载中...</div>
-    
-    <div ref="mapContainer" class="map-container"></div>
-    
-    <div class="tracking-info" v-if="trackingData.length > 0">
-      <h3>动物 {{ selectedAnimalId }} 的追踪数据</h3>
-      <div class="info-table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>时间</th>
-              <th>位置</th>
-              <th>坐标</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(point, index) in trackingData" :key="index">
-              <td>{{ new Date(point.timestamp).toLocaleString() }}</td>
-              <td>{{ point.location }}</td>
-              <td>{{ formatCoordinate(point.latitude) }}, {{ formatCoordinate(point.longitude) }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="loading" v-if="loadingData">数据加载中...</div>
+        
+        <div ref="mapContainer" class="map-container"></div>
       </div>
     </div>
   </div>
@@ -567,21 +614,76 @@ onBeforeUnmount(() => {
 .map-page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: calc(100vh - 60px); /* 减去顶栏高度 */
   padding: 20px;
+  margin-top: 60px; /* 为顶栏预留空间 */
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 左侧边栏样式 */
+.sidebar {
+  width: 350px;
+  min-width: 250px;
+  max-width: 50%;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+  border-radius: 8px 0 0 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  padding: 15px;
+  transition: width 0.3s ease;
+  margin-right: 10px;
+}
+
+/* 拉伸手柄 */
+.sidebar-resizer {
+  position: absolute;
+  right: -5px;
+  top: 0;
+  width: 10px;
+  height: 100%;
+  cursor: ew-resize;
+  z-index: 10;
+}
+
+.sidebar-resizer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 5px;
+  width: 2px;
+  height: 100%;
+  background-color: #ddd;
+}
+
+.sidebar-resizer:hover::after {
+  background-color: #0c63e4;
+}
+
+/* 右侧地图区域 */
+.map-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .controls {
   display: flex;
-  gap: 20px;
+  flex-direction: column;
+  gap: 15px;
   margin-bottom: 20px;
-  flex-wrap: wrap;
 }
 
 .control-group {
   display: flex;
   flex-direction: column;
-  min-width: 200px;
 }
 
 label {
@@ -626,10 +728,14 @@ select {
 
 .tracking-info {
   margin-top: 20px;
+  border-top: 1px solid #ddd;
+  padding-top: 15px;
 }
 
 .info-table-container {
   overflow-x: auto;
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
 }
 
 table {
@@ -647,6 +753,9 @@ th, td {
 th {
   background-color: #f5f5f5;
   font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .custom-marker {
