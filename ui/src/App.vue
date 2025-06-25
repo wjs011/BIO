@@ -6,6 +6,7 @@
           <div class="logo">生物多样性AI守护者</div>
           <div class="nav-links">
             <router-link to="/">首页</router-link>
+            <router-link to="/ai-engine">AI个体识别引擎</router-link>
             <div class="dropdown" @mouseenter="showDropdown" @mouseleave="hideDropdown">
               <span class="dropdown-title">项目介绍</span>
               <div class="dropdown-content" v-show="dropdownVisible" @mouseenter="showDropdown" @mouseleave="hideDropdown">
