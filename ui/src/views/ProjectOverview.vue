@@ -269,7 +269,7 @@ export default {
 .banner-stats {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
+  gap: 100px;
   flex-wrap: wrap;
 }
 
