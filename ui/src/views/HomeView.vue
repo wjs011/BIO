@@ -8,6 +8,7 @@
         <div class="hero-buttons">
           <router-link to="/project-overview" class="btn btn-primary">了解更多</router-link>
           <router-link to="/technique" class="btn btn-secondary">探索技术</router-link>
+          <router-link to="/map" class="btn btn-secondary">生态地图</router-link>
         </div>
       </div>
     </section>
@@ -84,6 +85,16 @@
             <div class="card-content">
               <h3>AI守护者</h3>
               <p>探索全球生物多样性AI守护系统</p>
+            </div>
+          </router-link>
+
+          <router-link to="/map" class="card">
+            <div class="card-image">
+              <img src="@/assets/Picture/增强型全球生物多样性AI守护者/北极生态图片.png" alt="生态地图">
+            </div>
+            <div class="card-content">
+              <h3>生态地图</h3>
+              <p>查看全球生物多样性分布情况</p>
             </div>
           </router-link>
         </div>
