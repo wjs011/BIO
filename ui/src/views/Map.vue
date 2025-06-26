@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const mapContainer = ref(null);
 const map = ref(null);
-let AMap = null; // Changed to let instead of const with window.AMap
+let AMap = null; // Changed to let instead of window.AMap
 const trackingData = ref([]);
 const selectedSpecies = ref('');
 const selectedSpeciesId = ref('');
@@ -16,6 +16,8 @@ const polylines = ref([]);
 const mapLoaded = ref(false); // Track if map has been loaded
 const loadingData = ref(false); // Track if data is being loaded
 const errorMessage = ref(''); // 添加错误信息显示
+const showAllRoutes = ref(false); // 是否显示所有路线
+const allRoutesData = ref([]); // 存储所有动物的路线数据
 
 // 添加侧边栏宽度调整相关变量
 const sidebar = ref(null);
@@ -272,7 +274,7 @@ const displayTrackingOnMap = () => {
     return;
   }
    
-  // 清除现有线条
+  // 清除现有线条和标记
   polylines.value.forEach(polyline => {
     try {
       map.value.remove(polyline);
@@ -297,6 +299,7 @@ const displayTrackingOnMap = () => {
     
     // 所有有效的点位
     const validPoints = [];
+    const validPointsWithData = [];
     
     // 按天分组追踪点以使用不同颜色
     const trackingByDay = {};
@@ -328,6 +331,13 @@ const displayTrackingOnMap = () => {
         const lngLatPair = [longitude, latitude];
         trackingByDay[date].push(lngLatPair);
         validPoints.push(lngLatPair);
+        
+        // 保存完整数据点信息用于标记
+        validPointsWithData.push({
+          position: lngLatPair,
+          timestamp: point.timestamp,
+          location: point.location || '未知位置'
+        });
       } catch (err) {
         console.error('处理坐标数据出错:', point, err);
       }
@@ -356,7 +366,9 @@ const displayTrackingOnMap = () => {
         // 添加起点和终点特殊标记
         if (validPoints.length >= 2) {
           const startPoint = validPoints[0];
+          const startData = validPointsWithData[0];
           const endPoint = validPoints[validPoints.length - 1];
+          const endData = validPointsWithData[validPointsWithData.length - 1];
           
           // 起点标记
           const startMarker = new AMap.Marker({
@@ -365,6 +377,22 @@ const displayTrackingOnMap = () => {
             offset: new AMap.Pixel(-10, -10),
             zIndex: 110
           });
+          
+          // 为起点添加信息窗体
+          const startInfo = new AMap.InfoWindow({
+            content: `<div class="info-window">
+                       <h4>起始点</h4>
+                       <p>时间: ${new Date(startData.timestamp).toLocaleString()}</p>
+                       <p>位置: ${startData.location}</p>
+                     </div>`,
+            offset: new AMap.Pixel(0, -30)
+          });
+          
+          // 绑定点击事件打开信息窗体
+          startMarker.on('click', () => {
+            startInfo.open(map.value, startPoint);
+          });
+          
           map.value.add(startMarker);
           polylines.value.push(startMarker);
           
@@ -375,21 +403,94 @@ const displayTrackingOnMap = () => {
             offset: new AMap.Pixel(-10, -10),
             zIndex: 110
           });
+          
+          // 为终点添加信息窗体
+          const endInfo = new AMap.InfoWindow({
+            content: `<div class="info-window">
+                       <h4>终止点</h4>
+                       <p>时间: ${new Date(endData.timestamp).toLocaleString()}</p>
+                       <p>位置: ${endData.location}</p>
+                     </div>`,
+            offset: new AMap.Pixel(0, -30)
+          });
+          
+          // 绑定点击事件打开信息窗体
+          endMarker.on('click', () => {
+            endInfo.open(map.value, endPoint);
+          });
+          
           map.value.add(endMarker);
           polylines.value.push(endMarker);
           
           console.log('添加起点和终点标记');
         }
         
-        // 为每个关键点添加标记（每5个点添加一个)
-        validPoints.forEach((point, index) => {
-          if (index > 0 && index < validPoints.length - 1 && index % 5 === 0) {
+        // 为每个数据点添加标记和信息窗
+        validPointsWithData.forEach((pointData, index) => {
+          // 避免标记过密，跳过起点和终点
+          if (index > 0 && index < validPointsWithData.length - 1) {
+            const formattedTime = new Date(pointData.timestamp).toLocaleString();
+            
+            // 创建自定义标记 - 使用pos.png图像
             const marker = new AMap.Marker({
-              position: point,
-              content: `<div class="custom-marker">${index + 1}</div>`,
-              offset: new AMap.Pixel(-10, -10),
-              zIndex: 101
+              position: pointData.position,
+              icon: new AMap.Icon({
+                size: new AMap.Size(32, 32),  // 图标尺寸
+                image: './pos.png',           // 图标的取图地址
+                imageSize: new AMap.Size(32, 32),   // 图标所用图片的尺寸
+                imageOffset: new AMap.Pixel(0, 0)  // 图标取图偏移量
+              }),
+              offset: new AMap.Pixel(-16, -32), // 偏移量，使图标底部中心点对齐坐标点
+              zIndex: 101,
+              title: `观测点 #${index + 1} (${formattedTime})`, // 鼠标悬浮时的提示文字
+              label: {
+                content: `<div class="marker-label">${index + 1}</div>`,
+                direction: 'top'
+              },
+              extData: {
+                isActive: false,
+                pointIndex: index
+              }
             });
+            
+            // 创建信息窗体
+            const infoWindow = new AMap.InfoWindow({
+              content: `<div class="info-window">
+                         <h4>观测点 #${index + 1}</h4>
+                         <p>时间: ${formattedTime}</p>
+                         <p>位置: ${pointData.location}</p>
+                         <p>坐标: ${formatCoordinate(pointData.position[1])}, ${formatCoordinate(pointData.position[0])}</p>
+                       </div>`,
+              offset: new AMap.Pixel(0, -40)
+            });
+            
+            // 点击标记时的事件
+            marker.on('click', (e) => {
+              // 打开信息窗体
+              infoWindow.open(map.value, pointData.position);
+              
+              // 切换标记图标 - 从pos.png变为spoj.png
+              const markerData = e.target.getExtData();
+              if (!markerData.isActive) {
+                e.target.setIcon(new AMap.Icon({
+                  size: new AMap.Size(32, 32),
+                  image: './spoj.png',
+                  imageSize: new AMap.Size(32, 32),
+                  imageOffset: new AMap.Pixel(0, 0)
+                }));
+                markerData.isActive = true;
+              } else {
+                e.target.setIcon(new AMap.Icon({
+                  size: new AMap.Size(32, 32),
+                  image: './pos.png',
+                  imageSize: new AMap.Size(32, 32),
+                  imageOffset: new AMap.Pixel(0, 0)
+                }));
+                markerData.isActive = false;
+              }
+              e.target.setExtData(markerData);
+            });
+            
             map.value.add(marker);
             polylines.value.push(marker);
           }
@@ -545,11 +646,306 @@ const retryFetch = () => {
   fetchAvailableSpecies();
 };
 
+// 获取所有动物路线数据
+const fetchAllRoutesData = async () => {
+  loadingData.value = true;
+  errorMessage.value = '';
+  
+  try {
+    console.log('开始请求所有动物路线数据');
+    const response = await axios.get('/api/tracking/all', {
+      timeout: 15000
+    });
+    
+    if (!response.data || !Array.isArray(response.data)) {
+      errorMessage.value = '获取路线数据格式不正确';
+      return;
+    }
+    
+    // 按动物分组
+    const animalRoutes = {};
+    response.data.forEach(point => {
+      // 使用物种+物种ID+动物ID作为唯一标识
+      const key = `${point.species}-${point.speciesId}-${point.animalId}`;
+      if (!animalRoutes[key]) {
+        animalRoutes[key] = {
+          species: point.species,
+          speciesId: point.speciesId,
+          animalId: point.animalId,
+          points: []
+        };
+      }
+      
+      // 添加路线点
+      if (point.longitude && point.latitude) {
+        try {
+          const longitude = typeof point.longitude === 'string' ? parseFloat(point.longitude) : Number(point.longitude);
+          const latitude = typeof point.latitude === 'string' ? parseFloat(point.latitude) : Number(point.latitude);
+          
+          // 验证坐标有效性
+          if (!isNaN(longitude) && !isNaN(latitude)) {
+            animalRoutes[key].points.push({
+              position: [longitude, latitude],
+              timestamp: point.timestamp,
+              location: point.location || '未知位置'
+            });
+          }
+        } catch (err) {
+          console.warn('处理坐标时出错:', err);
+        }
+      }
+    });
+    
+    // 按时间戳排序每条路线的点
+    Object.keys(animalRoutes).forEach(key => {
+      animalRoutes[key].points.sort((a, b) => 
+        new Date(a.timestamp) - new Date(b.timestamp)
+      );
+    });
+    
+    // 转换为数组格式
+    const routes = Object.values(animalRoutes).filter(route => route.points.length >= 2);
+    console.log(`获取到${routes.length}条动物迁徙路线`);
+    
+    allRoutesData.value = routes;
+    
+    // 如果地图已加载并且选择显示所有路线，则显示
+    if (mapLoaded.value && showAllRoutes.value) {
+      displayAllRoutes();
+    }
+    
+  } catch (error) {
+    console.error('获取所有路线数据时出错:', error);
+    errorMessage.value = `获取所有路线失败: ${error.message}`;
+  } finally {
+    loadingData.value = false;
+  }
+};
+
+// 生成一个随机但可辨别的颜色
+const getRouteColor = (index, total) => {
+  // 预设颜色数组 - 使用视觉上易区分的颜色
+  const colors = [
+    '#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6',
+    '#1abc9c', '#d35400', '#34495e', '#16a085', '#c0392b',
+    '#8e44ad', '#27ae60', '#e67e22', '#2980b9', '#f1c40f'
+  ];
+  
+  // 如果小于预设颜色数量，直接返回对应颜色
+  if (index < colors.length) {
+    return colors[index];
+  }
+  
+  // 否则根据索引生成一个颜色
+  const hue = (index * 137.5) % 360; // 使用黄金角以获得良好分布
+  return `hsl(${hue}, 75%, 50%)`;
+};
+
+// 切换显示所有路线/单个路线
+const toggleAllRoutes = async () => {
+  showAllRoutes.value = !showAllRoutes.value;
+  
+  if (showAllRoutes.value) {
+    // 如果数据已存在则直接显示，否则获取数据
+    if (allRoutesData.value.length === 0) {
+      await fetchAllRoutesData();
+    } else {
+      displayAllRoutes();
+    }
+  } else {
+    // 切回单条路线显示
+    if (trackingData.value.length > 0) {
+      displayTrackingOnMap();
+    }
+  }
+};
+
+// 显示所有动物路线
+const displayAllRoutes = () => {
+  if (!map.value || !AMap || allRoutesData.value.length === 0) {
+    console.error('地图未加载或没有路线数据');
+    return;
+  }
+  
+  // 清除现有标记
+  polylines.value.forEach(item => {
+    try {
+      map.value.remove(item);
+    } catch (e) {
+      console.warn('移除旧标记出错:', e);
+    }
+  });
+  polylines.value = [];
+  
+  try {
+    // 创建图例控件
+    createLegendControl();
+    
+    // 所有路线的点集合，用于设置地图视图
+    const allPoints = [];
+    
+    // 绘制每条路线
+    allRoutesData.value.forEach((route, index) => {
+      // 提取路径点
+      const path = route.points.map(p => p.position);
+      if (path.length < 2) return;
+      
+      // 添加到所有点集合
+      allPoints.push(...path);
+      
+      // 为每条路线分配颜色
+      const color = getRouteColor(index, allRoutesData.value.length);
+      
+      // 创建折线
+      const polyline = new AMap.Polyline({
+        path: path,
+        strokeColor: color,
+        strokeWeight: 5,
+        strokeOpacity: 0.8,
+        zIndex: 100,
+        strokeStyle: 'solid',
+        lineJoin: 'round',
+        extData: {
+          species: route.species,
+          animalId: route.animalId
+        }
+      });
+      
+      map.value.add(polyline);
+      polylines.value.push(polyline);
+      
+      // 添加起点和终点标记
+      const startPoint = path[0];
+      const endPoint = path[path.length - 1];
+      
+      // 起点标记
+      const startMarker = new AMap.Marker({
+        position: startPoint,
+        content: `<div class="custom-marker start-marker" style="border-color:${color};">起</div>`,
+        offset: new AMap.Pixel(-10, -10),
+        zIndex: 110,
+        title: `${route.species} ${route.animalId} - 起点`
+      });
+      map.value.add(startMarker);
+      polylines.value.push(startMarker);
+      
+      // 终点标记
+      const endMarker = new AMap.Marker({
+        position: endPoint,
+        content: `<div class="custom-marker end-marker" style="border-color:${color};">终</div>`,
+        offset: new AMap.Pixel(-10, -10),
+        zIndex: 110,
+        title: `${route.species} ${route.animalId} - 终点`
+      });
+      map.value.add(endMarker);
+      polylines.value.push(endMarker);
+      
+      // 沿路径添加一些关键点标记
+      if (path.length >= 5) {
+        // 每隔几个点添加一个标记
+        const stepSize = Math.max(1, Math.floor(path.length / 5));
+        for (let i = stepSize; i < path.length - 1; i += stepSize) {
+          const midMarker = new AMap.Marker({
+            position: path[i],
+            icon: new AMap.Icon({
+              size: new AMap.Size(24, 24),
+              image: './pos.png',
+              imageSize: new AMap.Size(24, 24),
+              imageOffset: new AMap.Pixel(0, 0)
+            }),
+            offset: new AMap.Pixel(-12, -24),
+            zIndex: 101,
+            title: `${route.species} ${route.animalId}`,
+            label: {
+              content: `<div class="marker-label" style="background-color:${color};">${route.species}</div>`,
+              direction: 'top'
+            }
+          });
+          map.value.add(midMarker);
+          polylines.value.push(midMarker);
+        }
+      }
+    });
+    
+    // 设置地图以适应所有点
+    if (allPoints.length > 0) {
+      const bounds = new AMap.Bounds(...calculateBounds(allPoints));
+      // 设置视图以包含所有点，添加一些边距
+      map.value.setBounds(bounds, false, [80, 80, 80, 80]);
+    }
+    
+    console.log(`显示了${allRoutesData.value.length}条迁徙路线`);
+  } catch (error) {
+    console.error('显示所有路线时出错:', error);
+    errorMessage.value = `显示所有路线失败: ${error.message}`;
+  }
+};
+
+// 创建图例控件
+const createLegendControl = () => {
+  // 移除现有的图例控件
+  const existingLegend = document.getElementById('routes-legend');
+  if (existingLegend) {
+    existingLegend.parentNode.removeChild(existingLegend);
+  }
+  
+  // 创建图例容器
+  const legend = document.createElement('div');
+  legend.id = 'routes-legend';
+  legend.className = 'routes-legend';
+  
+  // 创建图例标题
+  const title = document.createElement('div');
+  title.className = 'legend-title';
+  title.textContent = '动物迁徙路线';
+  legend.appendChild(title);
+  
+  // 限制显示的最大数量
+  const maxToShow = Math.min(allRoutesData.value.length, 10);
+  
+  // 添加每条路线到图例
+  for (let i = 0; i < maxToShow; i++) {
+    const route = allRoutesData.value[i];
+    const color = getRouteColor(i, allRoutesData.value.length);
+    
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    
+    const colorBox = document.createElement('span');
+    colorBox.className = 'color-box';
+    colorBox.style.backgroundColor = color;
+    item.appendChild(colorBox);
+    
+    const label = document.createElement('span');
+    label.textContent = `${route.species} (${route.animalId})`;
+    item.appendChild(label);
+    
+    legend.appendChild(item);
+  }
+  
+  // 如果有更多路线，显示"更多"提示
+  if (allRoutesData.value.length > maxToShow) {
+    const moreItem = document.createElement('div');
+    moreItem.className = 'legend-more';
+    moreItem.textContent = `+ 还有${allRoutesData.value.length - maxToShow}条路线`;
+    legend.appendChild(moreItem);
+  }
+  
+  // 添加图例到地图容器
+  const mapElem = mapContainer.value;
+  if (mapElem) {
+    mapElem.appendChild(legend);
+  }
+};
+
 onMounted(async () => {
   try {
     console.log('组件已挂载，开始加载高德地图API');
     await loadAmapAPI();
     initMap();
+    
+    // 初始化获取所有路线数据
+    fetchAllRoutesData();
   } catch (error) {
     console.error('地图加载失败:', error);
     errorMessage.value = `地图API加载失败: ${error.message}`;
@@ -604,9 +1000,19 @@ onBeforeUnmount(() => {
           <div class="control-group">
             <button @click="retryFetch" class="retry-button">重新获取数据</button>
           </div>
+          
+          <div class="control-group">
+            <button 
+              @click="toggleAllRoutes" 
+              class="all-routes-button" 
+              :class="{ active: showAllRoutes }"
+            >
+              {{ showAllRoutes ? '返回单条路线' : '显示所有迁徙路线' }}
+            </button>
+          </div>
         </div>
         
-        <div class="tracking-info" v-if="trackingData.length > 0">
+        <div class="tracking-info" v-if="trackingData.length > 0 && !showAllRoutes">
           <h3 class="tracking-header">
             <span class="animal-icon">{{ getAnimalIcon(selectedSpecies) }}</span>
             {{ selectedSpecies }} (ID: {{ selectedAnimalId }}) 的追踪数据
@@ -860,7 +1266,7 @@ select:focus {
   position: relative;
 }
 
-.tracking-info::before {
+/* .tracking-info::before {
   content: '🦁 野生动物保护追踪';
   position: absolute;
   top: -10px;
@@ -871,7 +1277,7 @@ select:focus {
   font-size: 14px;
   color: #2e7d32;
   font-weight: 600;
-}
+} */
 
 .info-table-container {
   overflow-x: auto;
@@ -936,6 +1342,76 @@ tr:hover {
   transform: scale(1.2);
 }
 
+/* 观测点标记样式 */
+.observation-marker {
+  background-color: rgba(52, 152, 219, 0.9);
+  border: 2px solid white;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  font-size: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* 自定义图标标签样式 */
+.marker-label {
+  background-color: rgba(52, 152, 219, 0.9);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 10px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+  border: 1px solid white;
+}
+
+.marker-number {
+  display: block;
+  transition: all 0.2s ease;
+}
+
+.marker-time {
+  position: absolute;
+  font-size: 0;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.observation-marker:hover {
+  transform: scale(1.1);
+  background-color: #2980b9;
+  box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  width: auto;
+  min-width: 100px;
+  height: 26px;
+  padding: 0 10px;
+}
+
+.observation-marker:hover .marker-number {
+  transform: translateX(-35px);
+  font-size: 11px;
+}
+
+.observation-marker:hover .marker-time {
+  font-size: 11px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .start-marker {
   background-color: #2ecc71;
   border-color: #27ae60;
@@ -956,6 +1432,27 @@ tr:hover {
   height: 28px;
   line-height: 28px;
   box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.3);
+}
+
+/* 信息窗口样式 */
+.info-window {
+  padding: 5px;
+  max-width: 220px;
+}
+
+.info-window h4 {
+  margin: 0 0 8px 0;
+  padding-bottom: 5px;
+  color: #2c3e50;
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+}
+
+.info-window p {
+  margin: 5px 0;
+  font-size: 12px;
+  color: #555;
+  line-height: 1.4;
 }
 
 .api-key-reminder {
@@ -1098,5 +1595,105 @@ tr:hover {
 .eco-badge::before {
   content: '🌿';
   margin-right: 5px;
+}
+
+/* 路线图例样式 */
+.routes-legend {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  padding: 10px;
+  max-width: 250px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 200;
+  border-left: 4px solid #4caf50;
+}
+
+.legend-title {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #eee;
+  color: #2e7d32;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
+  font-size: 12px;
+}
+
+.color-box {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  margin-right: 6px;
+  display: inline-block;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.legend-more {
+  text-align: center;
+  font-style: italic;
+  font-size: 11px;
+  color: #666;
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px dashed #ddd;
+}
+
+/* 显示所有路线按钮 */
+.all-routes-button {
+  padding: 10px 16px;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  width: 100%;
+  box-shadow: 0 2px 5px rgba(255, 152, 0, 0.3);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.all-routes-button::before {
+  content: "🗺️";
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.all-routes-button:hover {
+  background-color: #f57c00;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 152, 0, 0.4);
+}
+
+.all-routes-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 3px rgba(255, 152, 0, 0.4);
+}
+
+.all-routes-button.active {
+  background-color: #43a047;
+}
+
+.all-routes-button.active::before {
+  content: "↩️";
+}
+
+/* 禁用默认的 AMap InfoWindow 样式 */
+::v-deep .amap-info-content {
+  padding: 0 !important;
+}
+
+::v-deep .amap-info-sharp {
+  height: 12px !important;
 }
 </style>

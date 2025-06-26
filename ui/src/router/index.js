@@ -32,6 +32,11 @@ const routes = [
   },
   {
     path: '/map',
+    name: 'ecology-data',
+    component: () => import(/* webpackChunkName: "ecology-data" */ '../views/EcologyData.vue')
+  },
+  {
+    path: '/map-view',
     name: 'map',
     component: () => import(/* webpackChunkName: "map" */ '../views/Map.vue')
   }
